@@ -1,0 +1,54 @@
+.manage-user-container {
+  padding: 20px;
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.user-avatar {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.user-info {
+  flex-grow: 1;
+}
+
+.user-info .name {
+  font-weight: bold;
+}
+
+.user-info .email {
+  color: #6c757d;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.table-header .form-check {
+  margin-right: 20px;
+}
+
+.table-header .search-bar {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+
+.table-header .search-bar input {
+  margin-right: 10px;
+}
+
+.btn-group {
+  margin-left: 10px;
+}

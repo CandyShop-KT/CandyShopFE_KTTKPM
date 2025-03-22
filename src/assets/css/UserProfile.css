@@ -1,0 +1,195 @@
+/* Main container for the entire profile page */
+.user-profile-container {
+  padding: 20px;
+  background-color: #f7f7f7;
+  padding-bottom:300px;
+}
+
+/* Flexbox container to separate aside and article sections */
+.profile-layout {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+}
+
+/* Sidebar (Aside) styles */
+.profile-aside {
+  width: 20%;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  height: fit-content;
+  background-color: rgb(245, 245, 245);
+
+}
+
+.profile-aside h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.profile-aside ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.profile-aside li {
+  margin-bottom: 10px;
+}
+
+.profile-aside li button {
+  width: 80%;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  margin-left: 10%;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+  margin-top: 5px;
+
+}
+
+.profile-aside li button:hover {
+  background-color: #2d6f30;
+}
+
+/* Main content (Article) section */
+.profile-article {
+  width: 78%;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.profile-title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.profile-info {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  justify-content: space-around;
+}
+
+.profile-column {
+  flex: 1;
+  font-size: 1rem;
+}
+
+.profile-column p {
+  margin: 8px 0;
+}
+
+.avatar-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-left: 20px;
+}
+
+.avatar-upload-input {
+  margin-top: 10px;
+}
+
+.upload-avatar-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  width: auto;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.upload-avatar-button:hover {
+  background-color: #45a049;
+}
+
+/* Address section */
+.address-section {
+  margin-top: 30px;
+}
+
+.address-title {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.address-list {
+  margin-left: 15px;
+  list-style-type: decimal;
+  padding: 0;
+}
+
+.address-item {
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.address-item p {
+  margin: 5px 0;
+}
+
+.no-address {
+  font-style: italic;
+  color: #777;
+}
+
+/* Loading spinner or message */
+.loading {
+  font-size: 1.5rem;
+  color: #555;
+  text-align: center;
+  margin-top: 50px;
+}
+/* Thêm vào file CSS UserProfile.css */
+.address-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.address-table th, .address-table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.address-table th {
+  background-color: #f4f4f4;
+  color: #333;
+  font-weight: bold;
+}
+
+.address-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.address-table td {
+  vertical-align: middle;
+}
+
+.no-address {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
+

@@ -1,0 +1,46 @@
+### Node.js ###
+# Thư mục node_modules chứa các dependency, không cần đẩy lên Git
+node_modules/
+
+# File lock của npm và yarn
+package-lock.json
+yarn.lock
+
+# Thư mục build/output
+build/
+dist/
+.out/
+
+# Các file log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+debug.log*
+
+# Thư mục môi trường ảo hoặc tạm thời
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Các tệp cache và tạm thời
+.cache/
+.tmp/
+
+# File database tạm nếu có
+*.sqlite
+*.sqlite-journal
+
+# Các thư mục của IDE và hệ điều hành
+.DS_Store
+.idea/
+.vscode/
+Thumbs.db
+
+# Thư mục coverage khi chạy test
+coverage/
+
+# Các file output của PM2 nếu sử dụng
+pm2.log
+pm2.pid

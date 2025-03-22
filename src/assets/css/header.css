@@ -1,0 +1,163 @@
+.header {
+  background-color: #432818;
+  color: #333;
+  font-size: 14px;
+  font-weight: 300;
+  padding: 5px 0px;
+}
+
+.logoImg {
+  height: 80px;
+}
+
+.menuTren {
+  display: flex;
+
+  justify-content: space-between;
+}
+
+.search {
+  padding: 15px;
+  min-width: 500px;
+}
+
+.buttonSearch {
+  background-color: #190b0b;
+  border-radius: 3px;
+  border-width: 0.666667px;
+  padding: 8px 10px;
+  text-align: center;
+  color: white;
+}
+
+span {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 100px;
+}
+
+.menuDuoi .nav-link {
+  margin-left: 15px;
+  margin-right: 15px;
+  text-transform: uppercase;
+}
+
+.banner img {
+  object-fit: cover;
+  height: 270px;
+}
+
+.product {
+  background-color: #f8f2e8;
+  color: #333;
+  font-size: 14px;
+  font-weight: 300;
+  padding: 50px 0px;
+  justify-content: center;
+}
+
+h3 {
+  margin: 0px 0px 50px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.product-row {
+  padding-bottom: 10px;
+}
+
+.product img {
+  object-fit: cover;
+  height: 267px;
+  border-radius: 3px;
+  border: 1px solid gray;
+}
+
+.product img :hover {
+  filter: blur(10px);
+}
+
+.card-footer {
+  font-size: 25px;
+  text-align: center;
+}
+
+.card-footer a {
+  text-decoration: none;
+  color: #333;
+}
+
+.price {
+  font-size: 20px;
+}
+
+.footer {
+  color: white;
+  background-image: url("../images/banner2.jpg");
+}
+
+.brandSearch {
+  padding-left: 70px;
+}
+
+.page-link {
+  background-color: unset;
+  color: #190b0b;
+  border-color: #3d1a1a;
+}
+
+.active .page-link {
+  background-color: #3d1a1a;
+  border-color: #190b0b;
+}
+
+.page-link:hover {
+  background-color: #a52a2a80;
+  color: #190b0b;
+}
+
+.active .page-link:hover {
+  color: white;
+  background-color: #3d1a1a;
+}
+
+.overlay {
+  background-color: #000;
+}
+.sub-menu {
+  position: absolute;
+  background-color: #000;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin: 0;
+  display: none;
+  z-index: 1000;
+  align-items: "center";
+}
+
+.nav-item:hover .sub-menu {
+  display: block;
+}
+
+.nav-item {
+  position: relative;
+}
+.sub-menu li {
+  margin-bottom: 10px;
+}
+
+.sub-menu li {
+  color: #ffff;
+  text-decoration: none;
+}
+
+.sub-menu :hover {
+  color: gray; /* darker brown color */
+  background-color: black;
+}
+.dropdown-item:focus,
+.dropdown-item:hover {
+  color: white;
+  background-color: #2e8633;
+}

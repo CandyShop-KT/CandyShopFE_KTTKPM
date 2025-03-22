@@ -1,0 +1,82 @@
+/* Đặt container của form thêm địa chỉ */
+.address-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Tiêu đề form */
+.address-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Nhóm form */
+.address-form-group {
+  margin-bottom: 20px;
+}
+
+/* Label */
+.address-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Input */
+.address-input,
+.address-select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.address-input:focus,
+.address-select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Nút bấm */
+.address-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.address-btn {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.address-btn-primary {
+  background-color: #52350a;
+  color: white;
+}
+
+.address-btn-primary:hover {
+  background-color: #0056b3;
+}
+
+/* Thông báo lỗi */
+.address-alert {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}

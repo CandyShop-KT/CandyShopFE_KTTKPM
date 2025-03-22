@@ -1,0 +1,143 @@
+.order-detail-container {
+    margin: 0 auto;
+    padding: 30px;
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  
+
+  .order-detail-item {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 70%;
+    margin: 0 auto;
+    margin-bottom: 10px;
+  }
+  
+  /* Đoạn hiển thị sản phẩm */
+  .product-info-orderDetail {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .product-image-container {
+    flex: 1;
+    max-width: 200px;
+    margin-right: 20px;
+  }
+  
+  .productDetail-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Thông tin chi tiết sản phẩm */
+  .product-details {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .product-details h3 {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .product-details p {
+    font-size: 15px;
+    /* color: #666; */
+    margin-bottom: 5px;
+  }
+  
+  
+  /* Hiệu ứng hover cho các item */
+  .order-detail-item:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+  }
+  
+  /* Xử lý lỗi khi không có dữ liệu */
+  .loading, .error {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 50px;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .pagination button {
+    padding: 10px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+  
+  .pagination button:disabled {
+    cursor: not-allowed;
+    background-color: #f0f0f0;
+  }
+  
+  .page-numbers {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .page-number {
+    padding: 10px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+  
+  .page-number.active {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .page-number:hover {
+    background-color: #f0f0f0;
+  }
+  
+  
+  /* Đảm bảo các phần tử luôn căn chỉnh cho các thiết bị nhỏ hơn */
+  @media (max-width: 768px) {
+    .product-info {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .product-image-container {
+      margin-bottom: 20px;
+      max-width: 150px;
+    }
+  
+    .order-detail-item {
+      padding: 15px;
+    }
+  
+    .product-details h3 {
+      font-size: 1rem;
+    }
+  
+    .order-summary p {
+      font-size: 1rem;
+    }
+}
+  

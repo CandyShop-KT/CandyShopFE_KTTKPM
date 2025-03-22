@@ -1,0 +1,204 @@
+/* Header */
+.header {
+  background-color: #210f04;
+  color: #fff; /* Thay đổi màu chữ thành trắng */
+  font-size: 14px;
+  font-weight: 300;
+  padding: 10px 0px; /* Tăng khoảng cách top và bottom */
+}
+
+.logo {
+  height: 95px;
+}
+
+.menuTren {
+  align-items: center;
+  padding: 0px 42px;
+}
+
+.search {
+  padding: 15px;
+}
+
+.buttonSearch {
+  background-color: #190b0b;
+  border-radius: 3px;
+  border-width: 0.666667px;
+  padding: 8px 10px;
+  text-align: center;
+  color: white;
+}
+
+.link .fa {
+  background-color: #fff;
+  border-radius: 100%;
+  color: #3d1a1a;
+  /* display: inline-block; */
+  line-height: 36px;
+  margin: 0px 10px 0px 0px;
+  text-align: center;
+  width: 36px;
+  height: 36px;
+}
+
+span {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 100px;
+}
+
+.menuDuoi .nav-link {
+  margin-right: 45px;
+  text-transform: uppercase;
+  color: #fff; /* Thay đổi màu chữ thành trắng */
+}
+
+.banner img {
+  object-fit: cover;
+  height: 270px;
+}
+
+h3 {
+  margin: 0px 0px 50px;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* Product */
+.product {
+  display: flex;
+  flex-wrap: wrap; /* Cho phép các sản phẩm xuống hàng nếu không đủ chỗ */
+  justify-content: center; /* Căn giữa các sản phẩm */
+  margin: 0 auto; /* Căn giữa container */
+}
+
+.product .row {
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 50px;
+}
+
+.product-card {
+  position: relative; /* Để có thể đặt overlay lên trên ảnh */
+  overflow: hidden; /* Đảm bảo overlay không tràn ra ngoài card */
+  flex: 1 1 calc(25% - 20px); /* Mỗi sản phẩm chiếm 25% chiều rộng (4 sản phẩm trên hàng) */
+  margin: 10px; /* Khoảng cách giữa các sản phẩm */
+  max-width: 300px; /* Chiều rộng tối đa cho mỗi sản phẩm */
+  border-radius: 30px;
+  background-color: #fffaf0;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.1); /* Phóng to ảnh khi hover */
+}
+
+.product-image {
+  width: 100%; /* Chiều rộng của ảnh sản phẩm */
+  height: auto; /* Chiều cao tự động */
+  transition: transform 0.3s ease; /* Hiệu ứng chuyển động khi hover */
+}
+
+.overlay {
+  position: absolute; /* Đặt overlay lên trên ảnh */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Màu nền mờ với độ trong suốt */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white; /* Màu chữ trắng */
+  opacity: 0; /* Ẩn overlay ban đầu */
+  transition: opacity 0.3s ease; /* Hiệu ứng chuyển động khi hover */
+}
+
+.image-container:hover .overlay {
+  opacity: 1; /* Hiện overlay khi hover */
+}
+.product-info {
+  position: relative;
+  z-index: 2; /* Đảm bảo phần này luôn ở trên overlay */
+}
+
+.product-name,
+.product-price {
+  margin: 0; /* Bỏ margin cho các phần tử chữ */
+  text-align: center; /* Căn giữa chữ */
+}
+
+.product-name {
+  margin-top: 15px;
+}
+
+.product-price {
+  text-shadow: 0 0 5px white, 0 0 10px white;
+}
+
+.card-footer a {
+  text-decoration: none;
+  color: #333;
+}
+
+.card-footer {
+  font-size: 25px;
+  text-align: center;
+}
+
+.card-footer a {
+  text-decoration: none;
+  color: #333;
+}
+
+.price {
+  font-size: 20px;
+}
+
+/* Footer */
+.footer {
+  color: white;
+  background-image: url("../images/banner2.jpg");
+  padding: 20px 0; /* Them khoang cach top và bottom */
+}
+
+/* Brand Search */
+.brandSearch {
+  padding-left: 70px;
+}
+
+/* Pagination */
+.page-link {
+  background-color: unset;
+  color: #190b0b;
+  border-color: #3d1a1a;
+}
+
+.active .page-link {
+  background-color: #3d1a1a;
+  border-color: #190b0b;
+}
+
+.page-link:hover {
+  background-color: #a52a2a80;
+  color: #190b0b;
+}
+
+.active .page-link:hover {
+  color: white;
+  background-color: #3d1a1a;
+}
+.notification-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: black;
+  color: white;
+  padding: 15px 30px;
+  border-radius: 10px;
+  z-index: 9999;
+  font-size: 16px;
+  text-align: center;
+}

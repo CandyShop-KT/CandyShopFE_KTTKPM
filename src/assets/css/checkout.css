@@ -1,0 +1,157 @@
+/* Popup overlay */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Popup container */
+.popup {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Title */
+.popup-title {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Address list */
+.address-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+/* Address item */
+.address-item {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.address-item.selected {
+  border-color: #f56c6c;
+  background-color: #fff5f5;
+}
+
+.address-item:hover {
+  background-color: #f9f9f9;
+}
+
+/* Header in address item */
+.address-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.customer-name {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.phone-number {
+  margin-right: auto;
+  margin-left: 10px;
+  color: #555;
+}
+
+.edit-link {
+  color: #f56c6c;
+  cursor: pointer;
+}
+
+.edit-link:hover {
+  text-decoration: underline;
+}
+
+/* Footer buttons */
+.popup-footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.popup-footer .btn {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.popup-footer .btn-primary:hover {
+  background-color: #d04545;
+}
+
+.popup-footer .btn-secondary {
+  background-color: #ccc;
+  color: black;
+}
+
+.popup-footer .btn-secondary:hover {
+  background-color: #aaa;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.popup-footer {
+  display: flex;
+  justify-content: space-between; /* Hoặc space-evenly nếu bạn muốn khoảng cách đều giữa các button */
+  gap: 10px; /* Khoảng cách giữa các button */
+}
+
+.popup-footer button {
+  flex: 1; /* Mỗi button chiếm 50% chiều rộng */
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.popup-footer .btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.popup-footer .btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.popup-footer .btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.popup-footer .btn-primary:hover {
+  background-color: #0056b3;
+}
