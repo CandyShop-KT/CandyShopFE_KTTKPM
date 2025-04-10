@@ -1,166 +1,345 @@
 // ManageOrder.js
 import React, { useEffect, useState } from "react";
+import {
+  Table,
+  Tag,
+  Button,
+  Space,
+  Card,
+  Tabs,
+  message,
+  Modal,
+  Pagination,
+} from "antd";
+import { EyeOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import AdminLayout from "../layouts/AdminLayout";
 import "../assets/css/ManageOrder.css";
+
+const { TabPane } = Tabs;
 
 const ManageOrder = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem("token"); // Thay thế bằng token thực tế của bạn
-  const role = localStorage.getItem("role");
-  const api = "http://localhost:8081/api/";
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orderDetails, setOrderDetails] = useState([]);
+  const [detailsModalVisible, setDetailsModalVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState("ALL");
+
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const api = "http://localhost:8081/api/";
 
   useEffect(() => {
     const role = localStorage.getItem("role");
     if (role !== "ADMIN") {
-      alert("Bạn không có quyền truy cập trang này.");
-      navigate("/"); // Chuyển hướng về trang chính
+      message.error("Bạn không có quyền truy cập trang này");
+      navigate("/");
       return;
     }
     fetchOrders();
-  }, []);
+  }, [currentPage, pageSize, activeTab]);
 
   const fetchOrders = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
-        `${api}orders?page=0&limit=10&sortField=createdAt&sortOrder=desc`,
+        `${api}orders?page=${currentPage}&limit=${pageSize}&sortField=createdAt&sortOrder=desc`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       setOrders(response.data.data.content);
+      setTotal(response.data.data.totalElements);
       setLoading(false);
-      console.log(orders);
     } catch (error) {
-      console.error("Lỗi khi tải danh sách đơn hàng:", error);
+      message.error("Lỗi khi tải danh sách đơn hàng");
       setLoading(false);
+    }
+  };
+
+  const fetchOrderDetails = async (orderId) => {
+    try {
+      const response = await axios.get(`${api}orders/${orderId}/details`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setOrderDetails(response.data.data.content);
+      setDetailsModalVisible(true);
+    } catch (error) {
+      message.error("Lỗi khi tải chi tiết đơn hàng");
     }
   };
 
   const confirmOrder = async (orderId) => {
     try {
-      console.log(`token ${token}`);
-      console.log(`id:${orderId}`);
       await axios.post(
         `${api}orders/${orderId}/confirm`,
         {},
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      alert("Đơn hàng đã được xác nhận thành công!");
-      fetchOrders(); // Tải lại danh sách đơn hàng
+      message.success("Xác nhận đơn hàng thành công");
+      fetchOrders();
     } catch (error) {
-      console.error("Lỗi khi xác nhận đơn hàng:", error);
+      message.error("Lỗi khi xác nhận đơn hàng");
     }
   };
 
   const cancelOrder = async (orderId) => {
-    console.log(`token ${token}`);
-    console.log(`id:${orderId}`);
     try {
       await axios.post(
         `${api}orders/${orderId}/cancel`,
         {},
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      alert("Đơn hàng đã được hủy thành công!");
-      fetchOrders(); // Tải lại danh sách đơn hàng
+      message.success("Hủy đơn hàng thành công");
+      fetchOrders();
     } catch (error) {
-      console.error("Lỗi khi hủy đơn hàng:", error);
+      message.error("Lỗi khi hủy đơn hàng");
     }
   };
 
-  const viewOrder = async (orderId) => {
-    // Logic để cập nhật đơn hàng
-    navigate(`/order/manage/${orderId}`);
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "PENDING_CONFIRMATION":
+        return "orange";
+      case "PENDING_PAYMENT":
+        return "blue";
+      case "COMPLETED":
+        return "green";
+      case "CANCELLED":
+        return "red";
+      default:
+        return "default";
+    }
   };
 
-  if (loading) {
-    return <div className="text-center">Đang tải...</div>;
-  }
+  const getStatusText = (status) => {
+    switch (status) {
+      case "PENDING_CONFIRMATION":
+        return "Chờ xác nhận";
+      case "PENDING_PAYMENT":
+        return "Chờ thanh toán";
+      case "COMPLETED":
+        return "Hoàn thành";
+      case "CANCELLED":
+        return "Đã hủy";
+      default:
+        return status;
+    }
+  };
+
+  const columns = [
+    {
+      title: "Mã đơn hàng",
+      dataIndex: "orderId",
+      key: "orderId",
+    },
+    {
+      title: "Khách hàng",
+      dataIndex: ["user", "username"],
+      key: "username",
+    },
+    {
+      title: "Tổng tiền",
+      dataIndex: "totalAmount",
+      key: "totalAmount",
+      render: (amount) =>
+        new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(amount),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>
+      ),
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) => new Date(date).toLocaleDateString("vi-VN"),
+    },
+    {
+      title: "Thao tác",
+      key: "action",
+      render: (_, record) => (
+        <Space size="middle">
+          <Button
+            type="primary"
+            icon={<EyeOutlined />}
+            onClick={() => fetchOrderDetails(record.orderId)}
+          >
+            Chi tiết
+          </Button>
+          {record.status === "PENDING_CONFIRMATION" && (
+            <>
+              <Button
+                type="primary"
+                icon={<CheckOutlined />}
+                onClick={() => confirmOrder(record.orderId)}
+                style={{ backgroundColor: "#52c41a" }}
+              >
+                Xác nhận
+              </Button>
+              
+              <Button
+                danger
+                type="primary" 
+                icon={<CloseOutlined />}
+                onClick={() => cancelOrder(record.orderId)}
+                style={{ backgroundColor: "#ff4d4f" }}
+              >
+                Hủy
+              </Button>
+            </>
+          )}
+        </Space>
+      ),
+    },
+  ];
+
+  const handleTabChange = (key) => {
+    setActiveTab(key);
+    setCurrentPage(0);
+  };
 
   return (
-    <div className="container mt-4">
-      <nav className="order-manage nav nav-pills nav-fill">
-        <a className="nav-link active">Tất cả</a>
-        <a className="nav-link" href="#">
-          ĐANG CHỜ XÁC NHẬN
-        </a>
-        <a className="nav-link" href="#">
-          ĐANG CHỜ THANH TOÁN
-        </a>
-        <a className="nav-link" href="#">
-          THANH TOÁN THÀNH CÔNG
-        </a>
-        <a className="nav-link" href="#">
-          ĐÃ HỦY
-        </a>
-      </nav>
+    <AdminLayout>
+      <div className="manage-order-container">
+        <Card title="Quản lý đơn hàng" className="order-card">
+          <Tabs activeKey={activeTab} onChange={handleTabChange}>
+            <TabPane tab="Tất cả" key="ALL">
+              <Table
+                columns={columns}
+                dataSource={orders}
+                loading={loading}
+                rowKey="orderId"
+                pagination={false}
+              />
+            </TabPane>
+            <TabPane tab="Chờ xác nhận" key="PENDING_CONFIRMATION">
+              <Table
+                columns={columns}
+                dataSource={orders.filter(
+                  (order) => order.status === "PENDING_CONFIRMATION"
+                )}
+                loading={loading}
+                rowKey="orderId"
+                pagination={false}
+              />
+            </TabPane>
+            <TabPane tab="Chờ thanh toán" key="PENDING_PAYMENT">
+              <Table
+                columns={columns}
+                dataSource={orders.filter(
+                  (order) => order.status === "PENDING_PAYMENT"
+                )}
+                loading={loading}
+                rowKey="orderId"
+                pagination={false}
+              />
+            </TabPane>
+            <TabPane tab="Hoàn thành" key="COMPLETED">
+              <Table
+                columns={columns}
+                dataSource={orders.filter(
+                  (order) => order.status === "COMPLETED"
+                )}
+                loading={loading}
+                rowKey="orderId"
+                pagination={false}
+              />
+            </TabPane>
+            <TabPane tab="Đã hủy" key="CANCELLED">
+              <Table
+                columns={columns}
+                dataSource={orders.filter(
+                  (order) => order.status === "CANCELLED"
+                )}
+                loading={loading}
+                rowKey="orderId"
+                pagination={false}
+              />
+            </TabPane>
+          </Tabs>
 
-      {orders.map((order) => (
-        <div className="order-card" key={order.orderId}>
-          <div className="order-header">
-            <strong>{order.orderId}</strong>
-            <p>{order.customerName}</p>
+          <div
+            className="pagination-container"
+            style={{ marginTop: "1rem", textAlign: "right" }}
+          >
+            <Pagination
+              current={currentPage + 1}
+              total={total}
+              pageSize={pageSize}
+              onChange={(page) => setCurrentPage(page - 1)}
+              showSizeChanger
+              onShowSizeChange={(current, size) => {
+                setPageSize(size);
+                setCurrentPage(0);
+              }}
+              showTotal={(total) => `Tổng ${total} đơn hàng`}
+            />
           </div>
-          <div className="order-body">
-            <div className="order-footer">
-              <div className="order-status">
-                <span style={{ color: "blue", fontWeight: "bold" }}>
-                  {order.status}
-                </span>
-              </div>
-              <button className="btn btn-outline-success">
-                Xem chi tiết đơn
-              </button>
-              {/* Kiểm tra trạng thái đơn hàng */}
-              {order.status === "PENDING_CONFIRMATION" && (
-                <>
-                  <button
-                    className="btn btn-info"
-                    onClick={() => {
-                      confirmOrder(order.orderId);
-                    }}
-                  >
-                    Xác nhận đơn
-                  </button>
+        </Card>
 
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => {
-                      cancelOrder(order.orderId);
-                    }}
-                  >
-                    Hủy đơn
-                  </button>
-                </>
-              )}
-
-              <span className="original-price">Tổng tiền:</span>
-              <span className="price">
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })
-                  .format(order.totalAmount)
-                  .replace("₫", " vnd")}
-              </span>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
+        <Modal
+          title="Chi tiết đơn hàng"
+          visible={detailsModalVisible}
+          onCancel={() => setDetailsModalVisible(false)}
+          width={800}
+          footer={null}
+        >
+          <Table
+            columns={[
+              {
+                title: "Sản phẩm",
+                dataIndex: ["product", "name"],
+                key: "productName",
+              },
+              {
+                title: "Số lượng",
+                dataIndex: "quantity",
+                key: "quantity",
+              },
+              {
+                title: "Đơn giá",
+                dataIndex: "price",
+                key: "price",
+                render: (price) =>
+                  new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(price),
+              },
+              {
+                title: "Thành tiền",
+                key: "total",
+                render: (_, record) =>
+                  new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(record.price * record.quantity),
+              },
+            ]}
+            dataSource={orderDetails}
+            rowKey="id"
+            pagination={false}
+          />
+        </Modal>
+      </div>
+    </AdminLayout>
   );
 };
 

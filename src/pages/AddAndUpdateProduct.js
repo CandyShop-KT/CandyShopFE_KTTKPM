@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../assets/css/ManageProduct.css";
+import "../assets/css/AddAndUpdateProduct.css";
+import AdminLayout from "../layouts/AdminLayout";
 
-const ManageProducts = () => {
+const AddAndUpdateProduct = () => {
   const { productId } = useParams(); // Lấy productId từ URL
   const navigate = useNavigate(); // Khởi tạo useNavigate
   const [productName, setProductName] = useState("");
@@ -24,6 +25,7 @@ const ManageProducts = () => {
   const token = localStorage.getItem("token"); // Thay thế bằng token thực tế của bạn
   const role = localStorage.getItem("role");
   const [currentPrice, setCurrentPrice] = useState(""); // Giá hiện tại
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
     if (role !== "ADMIN") {
@@ -39,6 +41,15 @@ const ManageProducts = () => {
       }
     }
   }, [role, productId]);
+
+  useEffect(() => {
+    // Cleanup function for preview URL
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   // Hàm lấy danh sách danh mục
   const fetchCategories = async () => {
@@ -287,152 +298,238 @@ const ManageProducts = () => {
     navigate(`/product`); // Điều hướng về trang sản phẩm
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setMainImage(file);
+      // Create preview URL
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
+    }
+  };
+
   return (
-    <div className="manage-order-container container py-4">
-      <h2 className="manage-order-header text-center mb-4">
-        {isEditing ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm"}
-      </h2>
-      <form onSubmit={handleSubmit} className="manage-order-form row g-3">
-        {/* Dropdown cho danh mục chính */}
-        <div className="col-md-12">
-          <select
-            value={categoryId}
-            onChange={handleCategoryChange}
-            className="form-select manage-order-category"
-          >
-            <option value="">Chọn danh mục chính</option>
-            {categories.map((category) => (
-              <option key={category.categoryId} value={category.categoryId}>
-                {category.categoryName}
-              </option>
-            ))}
-          </select>
-        </div>
+    <AdminLayout>
+      <div className="manage-order-container container py-4">
+        <h2 className="manage-order-header text-center mb-4">
+          {isEditing ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm"}
+        </h2>
+        <form onSubmit={handleSubmit} className="manage-order-form">
+          <div className="row g-4">
+            {/* Phần thông tin cơ bản */}
+            <div className="col-md-8">
+              <div className="card h-100">
+                <div className="card-header bg-primary text-white">
+                  <h5 className="card-title mb-0">Thông tin cơ bản</h5>
+                </div>
+                <div className="card-body">
+                  <div className="row g-3">
+                    <div className="col-12">
+                      <label className="form-label">Tên sản phẩm</label>
+                      <input
+                        type="text"
+                        className="form-control manage-order-name"
+                        placeholder="Nhập tên sản phẩm"
+                        value={productName}
+                        onChange={(e) => setProductName(e.target.value)}
+                      />
+                    </div>
+                    <div className="col-12">
+                      <label className="form-label">Mô tả sản phẩm</label>
+                      <textarea
+                        className="form-control manage-order-description"
+                        placeholder="Nhập mô tả chi tiết về sản phẩm"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        rows="4"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Kích thước</label>
+                      <input
+                        type="text"
+                        className="form-control manage-order-dimension"
+                        placeholder="VD: 10x20x30"
+                        value={dimension}
+                        onChange={(e) => setDimension(e.target.value)}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Trọng lượng (g)</label>
+                      <input
+                        type="number"
+                        className="form-control manage-order-weight"
+                        placeholder="VD: 100"
+                        value={weight}
+                        onChange={(e) => setWeight(e.target.value)}
+                      />
+                    </div>
+                    <div className="col-12">
+                      <label className="form-label">Giá (VNĐ)</label>
+                      <input
+                        type="text"
+                        className="form-control manage-order-price"
+                        placeholder="Nhập giá sản phẩm"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        {/* Dropdown cho danh mục phụ */}
-        <div className="col-md-12">
-          <select
-            value={subCategoryId}
-            onChange={(e) => setSubCategoryId(e.target.value)}
-            className="form-select manage-order-subcategory"
-          >
-            {!isFetch ? (
-              <option value="">{subCategory.subCategoryName}</option>
-            ) : (
-              <option value="">Chọn danh mục phụ</option>
-            )}
-            {subCategories.map((subCategory) => (
-              <option
-                key={subCategory.subCategoryId}
-                value={subCategory.subCategoryId}
-              >
-                {subCategory.subCategoryName}
-              </option>
-            ))}
-          </select>
-        </div>
+            {/* Phần phân loại và ảnh */}
+            <div className="col-md-4">
+              <div className="row g-4">
+                {/* Card phân loại */}
+                <div className="col-12">
+                  <div className="card">
+                    <div className="card-header text-white">
+                      <h5 className="card-title mb-0">Phân loại</h5>
+                    </div>
+                    <div className="card-body">
+                      <div className="mb-3">
+                        <label className="form-label">Danh mục chính</label>
+                        <select
+                          value={categoryId}
+                          onChange={handleCategoryChange}
+                          className="form-select manage-order-category"
+                        >
+                          <option value="">Chọn danh mục chính</option>
+                          {categories.map((category) => (
+                            <option
+                              key={category.categoryId}
+                              value={category.categoryId}
+                            >
+                              {category.categoryName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">Danh mục phụ</label>
+                        <select
+                          value={subCategoryId}
+                          onChange={(e) => setSubCategoryId(e.target.value)}
+                          className="form-select manage-order-subcategory"
+                        >
+                          {!isFetch ? (
+                            <option value="">
+                              {subCategory.subCategoryName}
+                            </option>
+                          ) : (
+                            <option value="">Chọn danh mục phụ</option>
+                          )}
+                          {subCategories.map((subCategory) => (
+                            <option
+                              key={subCategory.subCategoryId}
+                              value={subCategory.subCategoryId}
+                            >
+                              {subCategory.subCategoryName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">Nhà cung cấp</label>
+                        <select
+                          value={publisherId}
+                          onChange={(e) => setPublisherId(e.target.value)}
+                          className="form-select manage-order-publisher"
+                        >
+                          <option value="">Chọn nhà cung cấp</option>
+                          {publishers.map((publisher) => (
+                            <option
+                              key={publisher.publisherId}
+                              value={publisher.publisherId}
+                            >
+                              {publisher.publisherName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-        {/* Dropdown cho ID Nhà xuất bản */}
-        <div className="col-md-12">
-          <select
-            value={publisherId}
-            onChange={(e) => setPublisherId(e.target.value)}
-            className="form-select manage-order-publisher"
-          >
-            <option value="">Chọn nhà cung cấp</option>
-            {publishers.map((publisher) => (
-              <option key={publisher.publisherId} value={publisher.publisherId}>
-                {publisher.publisherName}
-              </option>
-            ))}
-          </select>
-        </div>
+                {/* Card ảnh sản phẩm */}
+                {!isEditing && (
+                  <div className="col-12">
+                    <div className="card">
+                      <div className="card-header text-white">
+                        <h5 className="card-title mb-0">Ảnh sản phẩm</h5>
+                      </div>
+                      <div className="card-body">
+                        <div className="mb-3">
+                          <label className="form-label">Chọn ảnh</label>
+                          <input
+                            type="file"
+                            className="form-control manage-order-image"
+                            onChange={handleImageChange}
+                            accept="image/*"
+                            required
+                          />
+                        </div>
+                        {previewUrl && (
+                          <div className="text-center">
+                            <img
+                              src={previewUrl}
+                              alt="Preview"
+                              style={{
+                                maxWidth: "100%",
+                                height: "auto",
+                                objectFit: "contain",
+                                border: "1px solid #ddd",
+                                borderRadius: "8px",
+                                padding: "5px",
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
 
-        {/* Các trường khác */}
-        <div className="col-md-12">
-          <input
-            type="text"
-            className="form-control manage-order-name"
-            placeholder="Tên sản phẩm"
-            value={productName}
-            onChange={(e) => setProductName(e.target.value)}
-          />
-        </div>
-        <div className="col-md-12">
-          <textarea
-            className="form-control manage-order-description"
-            placeholder="Mô tả sản phẩm"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <div className="col-md-6">
-          <input
-            type="text"
-            className="form-control manage-order-dimension"
-            placeholder="Kích thước (ví dụ: 10x20x30)"
-            value={dimension}
-            onChange={(e) => setDimension(e.target.value)}
-          />
-        </div>
-        <div className="col-md-6">
-          <input
-            type="number"
-            className="form-control manage-order-weight"
-            placeholder="Trọng lượng (g)"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
-          />
-        </div>
-
-        {!isEditing && (
-          <div className="col-md-12">
-            <input
-              type="file"
-              className="form-control manage-order-image"
-              onChange={(e) => {
-                setMainImage(e.target.files[0]);
-              }}
-              required
-            />
+            {/* Phần nút bấm */}
+            <div className="col-12">
+              <div className="card">
+                <div className="card-body d-flex gap-2 justify-content-center">
+                  <button
+                    type="submit"
+                    className="btn btn-success manage-order-submit px-4"
+                  >
+                    {isEditing ? "Cập nhật" : "Thêm sản phẩm"}
+                  </button>
+                  {isEditing && (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn-danger manage-order-delete px-4"
+                        onClick={handleDeleteProduct}
+                      >
+                        Xóa sản phẩm
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-secondary manage-order-reset px-4"
+                        onClick={resetForm}
+                      >
+                        Hủy
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-
-        <div className="col-md-12">
-          <input
-            type="text"
-            className="form-control manage-order-price"
-            placeholder="Giá (VNĐ)"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-        </div>
-
-        <div className="col-md-12 d-flex gap-2">
-          <button type="submit" className="btn btn-success manage-order-submit">
-            {isEditing ? "Cập nhật" : "Thêm sản phẩm"}
-          </button>
-          {isEditing && (
-            <>
-              <button
-                type="button"
-                className="btn btn-danger manage-order-delete"
-                onClick={handleDeleteProduct}
-              >
-                Xóa sản phẩm
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary manage-order-reset"
-                onClick={resetForm}
-              >
-                Hủy
-              </button>
-            </>
-          )}
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    </AdminLayout>
   );
 };
-export default ManageProducts;
+
+export default AddAndUpdateProduct;

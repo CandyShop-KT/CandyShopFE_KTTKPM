@@ -1,166 +1,270 @@
 import React, { useEffect, useState } from "react";
+import {
+  Table,
+  Card,
+  Button,
+  Input,
+  Space,
+  Tag,
+  Avatar,
+  message,
+  Modal,
+  Tooltip,
+} from "antd";
+import {
+  SearchOutlined,
+  UserAddOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  EnvironmentOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import AdminLayout from "../layouts/AdminLayout";
 import "../assets/css/manageUser.css";
+
+const { Search } = Input;
 
 const ManageUser = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState(""); // State để lưu giá trị tìm kiếm
-  const token = localStorage.getItem("token"); // Lấy token từ localStorage
+  const [searchText, setSearchText] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const api = "http://localhost:8081/api/";
 
   useEffect(() => {
-    // Kiểm tra vai trò ADMIN
     const role = localStorage.getItem("role");
     if (role !== "ADMIN") {
-      alert("Bạn không có quyền truy cập trang này.");
-      navigate("/"); // Chuyển hướng về trang chính
+      message.error("Bạn không có quyền truy cập trang này");
+      navigate("/");
       return;
     }
-
-    // Gọi API để lấy danh sách người dùng
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("http://localhost:8081/api/users", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUsers(response.data.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        setLoading(false);
-      }
-    };
-
     fetchUsers();
-  }, [navigate, token]);
+  }, []);
 
-  const handleUserSelect = (userId) => {
-    navigate("/user/manage/detailUser ", { state: { userId } }); // Chuyển hướng và truyền userId
-  };
-
-  // Hàm tìm kiếm người dùng
-  const handleSearch = async (e) => {
-    e.preventDefault(); // Ngăn hành vi mặc định của form
-    if (searchTerm.trim()) {
+  const fetchUsers = async () => {
+    try {
       setLoading(true);
-      try {
-        const response = await axios.get(
-          `http://localhost:8081/api/users/${searchTerm}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setUsers([response.data.data]); // Cập nhật danh sách người dùng với kết quả tìm kiếm
-        setLoading(false);
-      } catch (error) {
-        console.error("Error searching users:", error);
-        setLoading(false);
-      }
-    } else {
-      alert("Vui lòng nhập id của người dùng.");
+      const response = await axios.get(`${api}users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUsers(response.data.data);
+      setLoading(false);
+    } catch (error) {
+      message.error("Lỗi khi tải danh sách người dùng");
+      setLoading(false);
     }
   };
 
-  // Hàm reset tìm kiếm
-  const handleResetSearch = () => {
-    setSearchTerm(""); // Reset thanh tìm kiếm
-    // Gọi lại API để lấy danh sách toàn bộ người dùng
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("http://localhost:8081/api/users", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUsers(response.data.data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-    fetchUsers();
+  const handleSearch = (value) => {
+    if (!value.trim()) {
+      fetchUsers();
+      return;
+    }
+    const filteredUsers = users.filter(
+      (user) =>
+        user.userId.toLowerCase().includes(value.toLowerCase()) ||
+        user.userName.toLowerCase().includes(value.toLowerCase()) ||
+        (user.firstName + " " + user.lastName)
+          .toLowerCase()
+          .includes(value.toLowerCase())
+    );
+    setUsers(filteredUsers);
   };
 
-  if (loading) {
-    return <div>Loading...</div>; // Hiển thị thông báo đang tải
-  }
+  const handleViewDetails = (user) => {
+    navigate(`/admin/users/${user.userId}`);
+  };
+
+  const handleViewAddresses = (userId) => {
+    navigate(`/admin/users/${userId}/addresses`);
+  };
+
+  const handleAddUser = () => {
+    navigate("/admin/users/add");
+  };
+
+  const getRoleTag = (role) => {
+    switch (role) {
+      case "ADMIN":
+        return <Tag color="#5c3d2e">Admin</Tag>;
+      case "USER":
+        return <Tag color="#8b5e3c">User</Tag>;
+      default:
+        return <Tag color="default">{role}</Tag>;
+    }
+  };
+
+  const getStatusTag = (status) => {
+    switch (status) {
+      case "ACTIVE":
+        return <Tag color="#6b8e23">Hoạt động</Tag>;
+      case "INACTIVE":
+        return <Tag color="#8b4513">Không hoạt động</Tag>;
+      default:
+        return <Tag color="default">{status}</Tag>;
+    }
+  };
+
+  const columns = [
+    {
+      title: "Ảnh đại diện",
+      dataIndex: "avatarUrl",
+      key: "avatar",
+      width: 80,
+      render: (avatarUrl, record) => (
+        <Avatar
+          src={
+            avatarUrl ||
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDPm48Z3Xq23OFtzXd8KKaaA6HTF-J7faLxg&s"
+          }
+          alt={`${record.firstName} ${record.lastName}`}
+        />
+      ),
+    },
+    {
+      title: "Họ và tên",
+      key: "fullName",
+      render: (_, record) => `${record.firstName} ${record.lastName}`,
+    },
+    {
+      title: "Tên đăng nhập",
+      dataIndex: "userName",
+      key: "userName",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Vai trò",
+      dataIndex: "role",
+      key: "role",
+      render: (role) => getRoleTag(role),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => getStatusTag(status),
+    },
+    {
+      title: "Thao tác",
+      key: "action",
+      render: (_, record) => (
+        <Space size="middle">
+          <Tooltip title="Xem chi tiết">
+            <Button
+              type="primary"
+              icon={<EyeOutlined />}
+              onClick={() => handleViewDetails(record)}
+            >
+              Chi tiết
+            </Button>
+          </Tooltip>
+          <Tooltip title="Quản lý địa chỉ">
+            <Button
+              type="primary"
+              icon={<EnvironmentOutlined />}
+              onClick={() => handleViewAddresses(record.userId)}
+            >
+              Địa chỉ
+            </Button>
+          </Tooltip>
+        </Space>
+      ),
+    },
+  ];
 
   return (
-    <div className="manage-user-container mt-0">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4>
-          Danh sách người dùng
-          <span className="text-muted"> {users.length}</span>
-        </h4>
-        <div className="btn-group">
-          <button
-            className="btn btn-outline-secondary"
-            onClick={handleResetSearch}
-          >
-            <i className="fas fa-filter"></i> Filters
-          </button>
-          <button className="btn btn-primary">
-            <i className="fas fa-plus"></i> Add user
-          </button>
-        </div>
-      </div>
-      <div className="table-header">
-        <div className="search-bar">
-          <form onSubmit={handleSearch}>
-            <input
-              className="form-control"
-              placeholder="Find by Id"
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)} // Cập nhật giá trị tìm kiếm
-            />
-            <button className="btn btn-outline-secondary" type="submit">
-              <i className="fas fa-search"></i>
-            </button>
-          </form>
-        </div>
-      </div>
-      <ul className="list-group">
-        {users.map((user) => (
-          <li
-            key={user.userId}
-            className="list-group-item d-flex align-items-center user-row"
-            onClick={() => handleUserSelect(user.userId)}
-          >
-            <img
-              alt={`Profile picture of ${user.firstName} ${user.lastName}`}
-              className="user-avatar"
-              src={
-                user.avatarUrl
-                  ? user.avatarUrl
-                  : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDPm48Z3Xq23OFtzXd8KKaaA6HTF-J7faLxg&s"
-              }
-            />
-            <div className="user-info flex-grow-1">
-              <div className="name">
-                {user.firstName} {user.lastName}
-              </div>
-              <div className="email">{user.userName}</div>
-            </div>
-            <div>
-              <span
-                className={`badge ${
-                  user.role === "ADMIN" ? "bg-success" : "bg-info"
-                }`}
+    <AdminLayout>
+      <div className="manage-user-container">
+        <Card
+          title="Quản lý người dùng"
+          className="user-card"
+          extra={
+            <div className="search-section">
+              <Search
+                placeholder="Tìm kiếm theo tên, email..."
+                allowClear
+                onSearch={handleSearch}
+                onChange={(e) => setSearchText(e.target.value)}
+                style={{ width: 300 }}
+              />
+              <Button
+                type="primary"
+                icon={<UserAddOutlined />}
+                onClick={handleAddUser}
               >
-                {user.role}
-              </span>
+                Thêm người dùng
+              </Button>
             </div>
-            <div className="text-muted px-5">{user.status}</div>
-          </li>
-        ))}
-      </ul>
-    </div>
+          }
+        >
+          <Table
+            className="user-table"
+            columns={columns}
+            dataSource={users}
+            rowKey="userId"
+            loading={loading}
+            pagination={{
+              pageSize: 10,
+              showTotal: (total) => `Tổng ${total} người dùng`,
+              showSizeChanger: true,
+              showQuickJumper: true,
+            }}
+          />
+        </Card>
+
+        <Modal
+          title="Chi tiết người dùng"
+          visible={isModalVisible}
+          onCancel={() => setIsModalVisible(false)}
+          footer={null}
+          width={800}
+          className="user-modal"
+        >
+          {selectedUser && (
+            <div className="user-details">
+              <div className="user-detail-item">
+                <span className="user-detail-label">ID:</span>
+                {selectedUser.userId}
+              </div>
+              <div className="user-detail-item">
+                <span className="user-detail-label">Họ và tên:</span>
+                {selectedUser.firstName} {selectedUser.lastName}
+              </div>
+              <div className="user-detail-item">
+                <span className="user-detail-label">Email:</span>
+                {selectedUser.email}
+              </div>
+              <div className="user-detail-item">
+                <span className="user-detail-label">Tên đăng nhập:</span>
+                {selectedUser.userName}
+              </div>
+              <div className="user-detail-item">
+                <span className="user-detail-label">Vai trò:</span>
+                {getRoleTag(selectedUser.role)}
+              </div>
+              <div className="user-detail-item">
+                <span className="user-detail-label">Trạng thái:</span>
+                {getStatusTag(selectedUser.status)}
+              </div>
+              <div className="user-detail-item">
+                <span className="user-detail-label">Số điện thoại:</span>
+                {selectedUser.phone || "Chưa cập nhật"}
+              </div>
+            </div>
+          )}
+        </Modal>
+      </div>
+    </AdminLayout>
   );
 };
 

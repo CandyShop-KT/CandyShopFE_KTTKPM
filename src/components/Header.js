@@ -185,37 +185,7 @@ const Header = () => {
                       Trang chủ
                     </a>
                   </li>
-                  {role === "ADMIN" && (
-                    <li className="nav-item text-center">
-                      <p className="nav-link text-center">Quyền admin</p>
-                      <ul className="dropdown-menu sub-menu text-center">
-                        <li
-                          className="nav-item text-center"
-                          onClick={() => {
-                            navigate("/user/manage");
-                          }}
-                        >
-                          Quản lý người dùng
-                        </li>
-                        <li
-                          className="nav-item text-center"
-                          onClick={() => {
-                            navigate("/order/manage");
-                          }}
-                        >
-                          Quản lý đơn hàng
-                        </li>
-                        <li
-                          className="nav-item text-center"
-                          onClick={() => {
-                            navigate("/product/manage");
-                          }}
-                        >
-                          Thêm mới sản phẩm
-                        </li>
-                      </ul>
-                    </li>
-                  )}
+                  
                   {[...categories].reverse().map((category) => (
                     <li
                       className="nav-item text-center"

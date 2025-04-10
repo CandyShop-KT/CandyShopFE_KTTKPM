@@ -9,30 +9,31 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
 import { toast } from "react-toastify";
 
 const SignIn = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMesage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const formRef = useRef(null); // Tạo ref cho form
+  const formRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Kiểm tra trạng thái đăng nhập khi component được render
   useEffect(() => {
-    const token = localStorage.getItem("token"); // Lấy token từ localStorage
-    // if (token) {
-    //   window.location.reload();
-    //   navigate("/product");
-    // }
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (token && user) {
+      if (user.role === "ADMIN") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+    }
   }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const response = await axios.post(
         "http://localhost:8081/api/auth/login",
@@ -68,14 +69,14 @@ const SignIn = () => {
         if (role === "ADMIN") {
           toast.success("Đăng nhập thành công với quyền admin!", {
             onClose: () => {
-              navigate("/product");
+              navigate("/admin");
               window.location.reload();
             },
           });
         } else {
           toast.success("Đăng nhập thành công!", {
             onClose: () => {
-              navigate("/product");
+              navigate("/");
               window.location.reload();
             },
           });
@@ -90,6 +91,7 @@ const SignIn = () => {
       }
     }
   };
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (formRef.current) {
@@ -181,9 +183,9 @@ const SignIn = () => {
                   </div>
                 </div>
                 {/* Hiển thị thông báo lỗi nếu đăng nhập thất bại */}
-                {errorMesage && (
+                {errorMessage && (
                   <div className="alert alert-danger" role="alert">
-                    {errorMesage}
+                    {errorMessage}
                   </div>
                 )}
 

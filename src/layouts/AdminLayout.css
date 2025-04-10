@@ -1,0 +1,185 @@
+:root {
+  --primary-color: #4b2c20;
+  --secondary-color: #8b4513;
+  --accent-color: #d2691e;
+  --light-brown: #deb887;
+  --cream-color: #faebd7;
+  --text-color: #2c1810;
+}
+
+.admin-layout {
+  min-height: 100vh;
+  background-color: var(--cream-color);
+}
+
+.admin-sider {
+  background-color: var(--primary-color) !important;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+}
+
+.admin-logo {
+  height: 64px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  background: var(--primary-color);
+  border-bottom: 1px solid var(--secondary-color);
+}
+
+.admin-logo img {
+  height: 40px;
+  margin-right: 8px;
+}
+
+.admin-logo span {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--cream-color);
+}
+
+.admin-header {
+  background: var(--primary-color) !important;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.admin-header-content {
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.admin-header-content h1 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--cream-color);
+}
+
+.admin-content {
+  padding: 24px;
+  background: var(--cream-color);
+}
+
+/* Menu Styling */
+.admin-menu {
+  background-color: var(--primary-color) !important;
+  border-right: none;
+}
+
+.admin-menu .ant-menu-item {
+  color: var(--cream-color) !important;
+  height: 50px;
+  line-height: 50px;
+  margin: 4px 0;
+}
+
+.admin-menu .ant-menu-item:hover {
+  background-color: var(--secondary-color) !important;
+  color: white !important;
+}
+
+.admin-menu .ant-menu-item-selected {
+  background-color: var(--accent-color) !important;
+  color: white !important;
+}
+
+.admin-menu .ant-menu-item .anticon {
+  color: var(--cream-color);
+}
+
+/* Card Styling */
+.stat-card {
+  border-radius: 8px;
+  background: white !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card .ant-statistic-title {
+  color: var(--text-color);
+}
+
+.stat-card .ant-statistic-content {
+  color: var(--primary-color);
+}
+
+/* Button Styling */
+.action-button {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: white !important;
+  height: 40px;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.action-button:hover {
+  background-color: var(--secondary-color) !important;
+  border-color: var(--secondary-color) !important;
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+/* Table Styling */
+.orders-table .ant-table-thead > tr > th {
+  background: var(--primary-color) !important;
+  color: var(--cream-color) !important;
+  font-weight: 600;
+}
+
+.orders-table .ant-table-tbody > tr:hover > td {
+  background: var(--light-brown) !important;
+}
+
+.orders-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--light-brown);
+}
+
+/* Card Headers */
+.ant-card-head {
+  background-color: var(--primary-color);
+}
+
+.ant-card-head-title {
+  color: var(--cream-color) !important;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .admin-sider {
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+  }
+
+  .admin-header-content h1 {
+    font-size: 16px;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cream-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
