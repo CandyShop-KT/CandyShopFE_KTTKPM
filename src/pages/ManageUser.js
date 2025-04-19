@@ -113,19 +113,9 @@ const ManageUser = () => {
 
   const columns = [
     {
-      title: "Ảnh đại diện",
-      dataIndex: "avatarUrl",
-      key: "avatar",
-      width: 80,
-      render: (avatarUrl, record) => (
-        <Avatar
-          src={
-            avatarUrl ||
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDPm48Z3Xq23OFtzXd8KKaaA6HTF-J7faLxg&s"
-          }
-          alt={`${record.firstName} ${record.lastName}`}
-        />
-      ),
+    title:"User ID",
+    dataIndex:"userId",
+    key:"userId"
     },
     {
       title: "Họ và tên",
