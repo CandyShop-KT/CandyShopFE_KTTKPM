@@ -128,6 +128,12 @@ const ManageUser = () => {
       key: "userName",
     },
     {
+      title:"SĐT",
+      dataIndex:"phoneNumber",
+      key: "phoneNumber"
+    }
+    ,
+    {
       title: "Email",
       dataIndex: "email",
       key: "email",
