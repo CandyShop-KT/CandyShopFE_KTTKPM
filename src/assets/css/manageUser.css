@@ -42,12 +42,9 @@
   padding: 16px 24px;
 }
 
-.user-card .ant-card-head-title,
-.user-detail-card .ant-card-head-title,
-.user-address-card .ant-card-head-title,
-.add-user-card .ant-card-head-title {
-  color: white;
-  font-weight: 600;
+.user-detail-card .ant-card-head-title {
+  color: brown;
+  font-weight: bold;
 }
 
 /* Search Section */
@@ -59,13 +56,36 @@
 
 .search-section .ant-input-affix-wrapper {
   border-radius: 6px;
-  border: 1px solid var(--chocolate-lighter);
+  border: 1px solid black;
+  height: 48px;
+  width: 400px;
 }
 
 .search-section .ant-input-affix-wrapper:hover,
 .search-section .ant-input-affix-wrapper:focus {
-  border-color: var(--chocolate-medium);
-  box-shadow: 0 0 0 2px rgba(139, 94, 60, 0.2);
+  border-color: 2px burlywood;
+  box-shadow: 0 0 0 2px  burlywood;
+}
+
+.search-section .ant-input-clear-icon{
+  color:black;
+  width: 50px;
+  height: 50px;
+  size: 50px;
+}
+
+/* search button */
+.search-section .ant-input-search-button{
+  height: 48px;
+  width: 50px;
+  font-size: 18px;
+  border: 1px solid black;
+  color: #5c3d2e;
+}
+
+.search-section .ant-input-search-button svg{
+  fill: black;
+  font-size: large;
 }
 
 /* Table Styles */
@@ -284,6 +304,7 @@
   border-radius: 8px 8px 0 0;
   padding: 16px 24px;
 }
+
 
 .add-user-card .ant-card-head-title {
   color: white;

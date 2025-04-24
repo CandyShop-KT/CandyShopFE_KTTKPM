@@ -139,6 +139,12 @@ const ManageUser = () => {
       key: "email",
     },
     {
+      title: "SĐT",
+      dataIndex:"phoneNumber",
+      key:"phoneNumber"
+    }
+    ,
+    {
       title: "Vai trò",
       dataIndex: "role",
       key: "role",
