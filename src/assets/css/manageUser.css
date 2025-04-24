@@ -71,21 +71,6 @@
   color:black;
   width: 50px;
   height: 50px;
-  size: 50px;
-}
-
-/* search button */
-.search-section .ant-input-search-button{
-  height: 48px;
-  width: 50px;
-  font-size: 18px;
-  border: 1px solid black;
-  color: #5c3d2e;
-}
-
-.search-section .ant-input-search-button svg{
-  fill: black;
-  font-size: large;
 }
 
 /* Table Styles */
