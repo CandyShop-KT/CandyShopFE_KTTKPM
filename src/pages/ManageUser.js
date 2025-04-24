@@ -71,9 +71,9 @@ const ManageUser = () => {
       (user) =>
         user.userId.toLowerCase().includes(value.toLowerCase()) ||
         user.userName.toLowerCase().includes(value.toLowerCase()) ||
-        (user.firstName + " " + user.lastName)
-          .toLowerCase()
-          .includes(value.toLowerCase())
+        (user.firstName + " " + user.lastName).toLowerCase().includes(value.toLowerCase())||
+         user.phoneNumber.toLowerCase().includes(value.toLowerCase())||
+         user.email.toLowerCase().includes(value.toLowerCase())
     );
     setUsers(filteredUsers);
   };
