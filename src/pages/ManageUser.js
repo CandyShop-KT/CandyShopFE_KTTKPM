@@ -18,6 +18,7 @@ import {
   DeleteOutlined,
   EnvironmentOutlined,
   EyeOutlined,
+  BoldOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -113,9 +114,9 @@ const ManageUser = () => {
 
   const columns = [
     {
-    title:"User ID",
-    dataIndex:"userId",
-    key:"userId"
+      title:"USER ID",
+      dataIndex:"userId",
+      key:"userId"
     },
     {
       title: "Họ và tên",
@@ -127,12 +128,6 @@ const ManageUser = () => {
       dataIndex: "userName",
       key: "userName",
     },
-    {
-      title:"SĐT",
-      dataIndex:"phoneNumber",
-      key: "phoneNumber"
-    }
-    ,
     {
       title: "Email",
       dataIndex: "email",
@@ -188,7 +183,7 @@ const ManageUser = () => {
     <AdminLayout>
       <div className="manage-user-container">
         <Card
-          title="Quản lý người dùng"
+          title={<span style={{color:'brown', fontWeight:"bold",fontSize:"20px"}}>QUẢN LÝ NGƯỜI DÙNG</span>}
           className="user-card"
           extra={
             <div className="search-section">
@@ -197,7 +192,6 @@ const ManageUser = () => {
                 allowClear
                 onSearch={handleSearch}
                 onChange={(e) => setSearchText(e.target.value)}
-                style={{ width: 300 }}
               />
               <Button
                 type="primary"
