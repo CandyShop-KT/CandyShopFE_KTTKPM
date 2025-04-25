@@ -153,7 +153,7 @@ const ManageOrder = () => {
       key: "username",
     },
     {
-      title:"Tên khách hàng",
+      title:"Tên KH",
       dataIndex:"customerName",
       key:"customerName"
 
