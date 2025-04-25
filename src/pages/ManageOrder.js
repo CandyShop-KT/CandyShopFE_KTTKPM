@@ -350,7 +350,7 @@ const ManageOrder = () => {
             columns={[
               {
                 title: "Sản phẩm",
-                dataIndex: ["product", "name"],
+                dataIndex: ["product", "productName"],
                 key: "productName",
               },
               {
@@ -360,7 +360,7 @@ const ManageOrder = () => {
               },
               {
                 title: "Đơn giá",
-                dataIndex: "price",
+                dataIndex: ["priceHistory", "newPrice"],
                 key: "price",
                 render: (price) =>
                   new Intl.NumberFormat("vi-VN", {
@@ -375,11 +375,11 @@ const ManageOrder = () => {
                   new Intl.NumberFormat("vi-VN", {
                     style: "currency",
                     currency: "VND",
-                  }).format(record.price * record.quantity),
+                  }).format(record.quantity * record.priceHistory.newPrice),
               },
             ]}
             dataSource={orderDetails}
-            rowKey="id"
+            rowKey="orderDetailId"
             pagination={false}
           />
         </Modal>
