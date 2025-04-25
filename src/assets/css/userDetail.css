@@ -206,3 +206,14 @@
     justify-content: center;
 
   }
+
+.ant-select-single .ant-select-selector {
+    color: black !important; 
+    background-color: white !important; 
+    border: 1px solid #d9d9d9; 
+  }
+  
+  .ant-select-selection-item {
+    color: black !important;
+  }
+  

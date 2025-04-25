@@ -150,7 +150,7 @@ const UserDetail = () => {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
-      message.success("Cập nhật vai trò thành công");
+      // message.success("Cập nhật vai trò thành công");
       fetchUserDetails(); 
     } catch (error) {
       console.error("Error during role change:", error);
@@ -212,8 +212,9 @@ const UserDetail = () => {
               <Space>
               {editMode ? (
                     <Select
+
                       value={form.getFieldValue("role")} // Đảm bảo rằng role được set chính xác từ form
-                      style={{ width: 120 }}
+                      style={{ width: 120, color:'black' }}
                       onChange={(value) => {
                         form.setFieldValue("role", value); // Cập nhật role trong form
                         handleRoleChange(value); // Cập nhật role lên backend
