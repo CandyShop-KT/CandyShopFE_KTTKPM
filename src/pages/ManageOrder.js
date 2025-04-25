@@ -349,6 +349,18 @@ const ManageOrder = () => {
           <Table
             columns={[
               {
+                title: "Hình ảnh",
+                key: "image",
+                render: (_, record) => (
+      
+                  <img
+                    src={record.product.mainImageUrl} 
+                    alt=""
+                    style={{ width: 50, height: 50, objectFit: "cover" }} 
+                  />
+                ),
+              },
+              {
                 title: "Sản phẩm",
                 dataIndex: ["product", "productName"],
                 key: "productName",
