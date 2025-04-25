@@ -203,12 +203,14 @@ const UserDetail = () => {
                 Quản lý địa chỉ
               </Button>
               <Button
+                type="primary"
                 icon={<LockOutlined />}
                 onClick={() => setChangePasswordModalVisible(true)}
               >
                 Đổi mật khẩu
               </Button>
               <Button
+                type="primary"
                 icon={<MailOutlined />}
                 onClick={() => setChangeEmailModalVisible(true)}
               >
@@ -220,7 +222,9 @@ const UserDetail = () => {
                 </Button>
               ) : (
                 <Space>
-                  <Button onClick={handleCancel}>Hủy</Button>
+                  <Button onClick={handleCancel}
+                  type="primary"
+                  >Hủy</Button>
                   <Button
                     type="primary"
                     icon={<SaveOutlined />}
