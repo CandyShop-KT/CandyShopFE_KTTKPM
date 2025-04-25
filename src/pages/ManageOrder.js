@@ -143,9 +143,20 @@ const ManageOrder = () => {
       key: "orderId",
     },
     {
-      title: "Khách hàng",
-      dataIndex: ["user", "username"],
+      title:"Mã khách hàng",
+      dataIndex:"userId",
+      key:"userId"
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
       key: "username",
+    },
+    {
+      title:"Tên khách hàng",
+      dataIndex:"customerName",
+      key:"customerName"
+
     },
     {
       title: "Tổng tiền",
