@@ -1,0 +1,240 @@
+/* Reset default button styles */
+button {
+  border: none;
+  outline: none;
+  background: none;
+  font-family: inherit;
+}
+
+/* Base button styles */
+.ant-btn {
+  color: #fff !important;
+  border: none !important;
+  height: 35px !important;
+  border-radius: 5px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Primary button styles */
+.ant-btn-primary {
+  background-color: #8b4513 !important;
+  border-color: #8b4513 !important;
+  color: #fff !important;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background-color: #a0522d !important;
+  border-color: #a0522d !important;
+  color: #fff !important;
+}
+
+/* Dangerous button styles */
+.ant-btn-dangerous {
+  background-color: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+  color: #fff !important;
+}
+
+.ant-btn-dangerous:hover,
+.ant-btn-dangerous:focus {
+  background-color: #ff7875 !important;
+  border-color: #ff7875 !important;
+  color: #fff !important;
+}
+
+/* Search button styles */
+.ant-input-search .ant-input-search-button {
+  background-color: #8b4513 !important;
+  border-color: #8b4513 !important;
+  color: #fff !important;
+}
+
+.ant-input-search .ant-input-search-button:hover,
+.ant-input-search .ant-input-search-button:focus {
+  background-color: #a0522d !important;
+  border-color: #a0522d !important;
+}
+
+/* Table action buttons */
+.ant-table-tbody .ant-btn {
+  margin: 0 4px !important;
+}
+
+/* Edit button specific styles */
+.ant-btn-primary.edit-button {
+  background-color: #8b4513 !important;
+  border-color: #8b4513 !important;
+  margin-right: 8px !important;
+}
+
+/* Delete button specific styles */
+.ant-btn-dangerous.delete-button {
+  background-color: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+}
+
+/* Icon styles within buttons */
+.ant-btn .anticon {
+  margin-right: 8px !important;
+}
+
+/* Error message styles */
+.ant-message-notice-content {
+  background-color: #fff2f0 !important;
+  border: 1px solid #e82412 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  padding: 10px 16px !important;
+}
+
+.ant-message-error {
+  color: #ff4d4f !important;
+}
+
+.ant-message-error .anticon {
+  color: #ff4d4f !important;
+}
+
+/* Input validation styles */
+.ant-input-search.ant-input-search-with-button
+  .ant-input-affix-wrapper-status-error {
+  border-color: #ff4d4f !important;
+}
+
+.ant-input-search.ant-input-search-with-button
+  .ant-input-affix-wrapper-status-error:hover {
+  border-color: #ff7875 !important;
+}
+
+.ant-input-search.ant-input-search-with-button
+  .ant-input-affix-wrapper-status-error:focus {
+  border-color: #ff7875 !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2) !important;
+}
+
+/* Error tooltip styles */
+.ant-form-item-explain-error {
+  color: #ff4d4f !important;
+  font-size: 14px !important;
+  margin-top: 4px !important;
+}
+
+.ant-tooltip-inner {
+  background-color: #ff4d4f !important;
+  color: black !important;
+}
+
+/* Modal button styles */
+.ant-modal-footer .ant-btn {
+  height: 35px !important;
+}
+
+.ant-modal-footer .ant-btn-primary {
+  background-color: #8b4513 !important;
+  border-color: #8b4513 !important;
+}
+
+.ant-modal-footer .ant-btn-default {
+  color: #000 !important;
+  border: 1px solid #d9d9d9 !important;
+  background-color: #fff !important;
+}
+
+/* Ensure all button text is visible */
+.ant-btn span {
+  color: inherit !important;
+}
+
+/* Modal styles */
+.ant-modal-footer {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  padding: 16px 24px !important;
+}
+
+.ant-modal-footer .ant-btn {
+  height: 35px !important;
+  margin: 0 !important; /* Remove default margins */
+  padding: 4px 15px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ant-modal-header {
+  background-color: #8b4513 !important;
+  padding: 16px 24px !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.ant-modal-title {
+  color: white !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+}
+
+.ant-modal-close {
+  color: white !important;
+}
+
+.ant-modal-close:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.ant-modal-content {
+  border-radius: 8px !important;
+}
+
+.ant-modal-body {
+  padding: 24px !important;
+}
+
+/* Form styles in modal */
+.ant-form-item-label > label {
+  font-weight: 500 !important;
+}
+
+.ant-form-item-required::before {
+  color: #ff4d4f !important;
+}
+
+/* Select styles */
+.ant-select {
+  width: 100% !important;
+}
+
+.ant-select-selector {
+  border-color: #d9d9d9 !important;
+}
+
+.ant-select-selection-item {
+  color: #000000 !important;
+  font-weight: normal !important;
+}
+
+.ant-select-item-option-content {
+  color: #000000 !important;
+}
+
+.ant-select-item-option-selected {
+  background-color: #8b4513 !important;
+}
+
+.ant-select-item-option-selected .ant-select-item-option-content {
+  color: #ffffff !important;
+}
+
+.ant-select-item-option:hover {
+  background-color: #a0522d !important;
+}
+
+.ant-select-item-option:hover .ant-select-item-option-content {
+  color: #ffffff !important;
+}

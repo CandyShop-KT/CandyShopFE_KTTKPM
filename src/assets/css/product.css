@@ -169,26 +169,56 @@ h3 {
 }
 
 /* Pagination */
-.page-link {
-  background-color: unset;
-  color: #190b0b;
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px 0;
+  gap: 5px;
+}
+
+.page-item {
+  list-style: none;
+}
+
+.page-item .page-link {
+  border: 1px solid #ddd;
+  padding: 8px 16px;
+  color: #666;
+  background-color: #fff;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  font-weight: 500;
+  min-width: 40px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.page-item .page-link:hover {
+  background-color: #f8f9fa;
+  color: #333;
+  border-color: #ddd;
+}
+
+.page-item.active .page-link {
+  background-color: #3d1a1a;
   border-color: #3d1a1a;
+  color: #fff;
 }
 
-.active .page-link {
-  background-color: #3d1a1a;
-  border-color: #190b0b;
+.page-item.active .page-link:hover {
+  background-color: #2b1212;
+  border-color: #2b1212;
+  color: #fff;
 }
 
-.page-link:hover {
-  background-color: #a52a2a80;
-  color: #190b0b;
+.page-item.disabled .page-link {
+  color: #ccc;
+  pointer-events: none;
+  background-color: #fff;
+  border-color: #ddd;
 }
 
-.active .page-link:hover {
-  color: white;
-  background-color: #3d1a1a;
-}
 .notification-container {
   position: fixed;
   top: 50%;
