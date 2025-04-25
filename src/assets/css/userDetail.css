@@ -194,3 +194,15 @@
     flex-direction: column;
     align-items: center;
   }
+  .user-profile-header{
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .user-info-header{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+  }

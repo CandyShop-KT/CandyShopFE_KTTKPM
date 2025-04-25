@@ -120,24 +120,27 @@ const UserDetail = () => {
     }
   };
 
-  const handleUploadAvatar = async (info) => {
-    if (info.file.status === "done") {
-      const formData = new FormData();
-      formData.append("file", info.file.originFileObj);
-      try {
-        await axios.patch(`${api}users/${userId}/avatar`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        message.success("Cập nhật ảnh đại diện thành công");
-        fetchUserDetails();
-      } catch (error) {
-        message.error("Không thể cập nhật ảnh đại diện");
-      }
+  const handleUploadAvatar = async ({ file, onSuccess, onError }) => {
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      await axios.patch(`${api}users/${userId}/avatar`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      message.success("Cập nhật ảnh đại diện thành công");
+      onSuccess(); // báo hiệu thành công cho Upload
+      fetchUserDetails(); // cập nhật lại avatar
+    } catch (error) {
+      message.error("Không thể cập nhật ảnh đại diện");
+      onError(error); // báo lỗi cho Upload
     }
   };
+  
+
 
   const getRoleTag = (role) => {
     switch (role) {
@@ -172,11 +175,11 @@ const UserDetail = () => {
           <div className="user-profile-header">
             <div className="user-avatar-section">
               <div className="avatar-wrapper">
-              <Avatar size={120} src={user?.avatarUrl} icon={<UserOutlined />} />
+              <Avatar size={120} key={user?.avatarUrl} src={user?.avatarUrl} icon={<UserOutlined />} />
               <Upload
                 name="avatar"
                 showUploadList={false}
-                onChange={handleUploadAvatar}
+                customRequest={handleUploadAvatar}
               >
                 <Button icon={<UploadOutlined />} size="small" className="upload-button" type="primary">
                   Thay đổi ảnh
@@ -186,10 +189,12 @@ const UserDetail = () => {
             </div>
             <div className="user-info-header">
               <h2 className="user-name">{`${user?.firstName} ${user?.lastName}`}</h2>
+              <div style={{display:'flex', justifyContent:'center', marginTop:20}}>
               <Space>
                 {getRoleTag(user?.role)}
                 {getStatusTag(user?.status)}
               </Space>
+              </div>
             </div>
           </div>
 
