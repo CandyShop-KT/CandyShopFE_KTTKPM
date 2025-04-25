@@ -395,11 +395,11 @@ const ManageOrder = () => {
             rowKey="orderDetailId"
             pagination={{
               total:total,
-              pageSize:10,
+              pageSize:5,
               onChange:(page)=>{
                 const orderId= orderDetails.length>0? orderDetails[0].orderId:null;
                 if(orderId){
-                  fetchOrderDetails(orderId, page -1 ,10);
+                  fetchOrderDetails(orderId, page -1 ,5);
                 }
               }
             }}
