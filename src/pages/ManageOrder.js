@@ -81,12 +81,13 @@ const ManageOrder = () => {
     setOrders(filtered); // cập nhật danh sách đã lọc
   };
 
-  const fetchOrderDetails = async (orderId) => {
+  const fetchOrderDetails = async (orderId,page=0, limit=10) => {
     try {
-      const response = await axios.get(`${api}orders/${orderId}/details`, {
+      const response = await axios.get(`${api}orders/${orderId}/details?page=${page}&limit=${limit}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOrderDetails(response.data.data.content);
+      setTotal(response.data.data.totalElements);
       setDetailsModalVisible(true);
     } catch (error) {
       message.error("Lỗi khi tải chi tiết đơn hàng");
@@ -392,7 +393,16 @@ const ManageOrder = () => {
             ]}
             dataSource={orderDetails}
             rowKey="orderDetailId"
-            pagination={false}
+            pagination={{
+              total:total,
+              pageSize:10,
+              onChange:(page)=>{
+                const orderId= orderDetails.length>0? orderDetails[0].orderId:null;
+                if(orderId){
+                  fetchOrderDetails(orderId, page -1 ,10);
+                }
+              }
+            }}
           />
         </Modal>
       </div>
