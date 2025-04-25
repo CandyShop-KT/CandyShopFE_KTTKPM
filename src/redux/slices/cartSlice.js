@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 // Lấy thông tin người dùng từ localStorage
 const userId = localStorage.getItem("userId"); // Lấy ID người dùng đã đăng nhập
 const tempCartKey = "cart"; // Khóa giỏ hàng tạm thời
-const userCartKey = `cart_${userId}`; // Khóa giỏ hàng của người dùng
+const userCartKey = userId ? `cart_${userId}` : null; // Khóa giỏ hàng của người dùng
 
 // Lấy giỏ hàng từ localStorage
 let initialCart = [];
@@ -27,7 +27,7 @@ if (userId) {
         existingItem.quantity += item.quantity;
       } else {
         // Nếu chưa có, thêm sản phẩm mới vào giỏ hàng
-        initialCart.push(item);
+        initialCart.push({ ...item, selected: true });
       }
     });
 
@@ -43,8 +43,8 @@ if (userId) {
 }
 
 const initialState = {
-  cartCount: initialCart.reduce((acc, item) => acc + item.quantity, 0), // Tổng số lượng sản phẩm trong giỏ
-  cartItems: initialCart, // Danh sách sản phẩm trong giỏ
+  cartCount: initialCart.reduce((acc, item) => acc + item.quantity, 0),
+  cartItems: initialCart,
 };
 
 const cartSlice = createSlice({
@@ -73,12 +73,56 @@ const cartSlice = createSlice({
       );
 
       // Cập nhật giỏ hàng vào localStorage
-      if (userId) {
+      const currentUserId = localStorage.getItem("userId");
+      if (currentUserId) {
         // Nếu người dùng đã đăng nhập, lưu giỏ hàng vào khóa theo userId
-        localStorage.setItem(userCartKey, JSON.stringify(state.cartItems));
+        localStorage.setItem(`cart_${currentUserId}`, JSON.stringify(state.cartItems));
       } else {
         // Nếu chưa đăng nhập, lưu giỏ hàng vào khóa tạm thời
         localStorage.setItem(tempCartKey, JSON.stringify(state.cartItems));
+      }
+    },
+
+    // Thêm action mới để đồng bộ giỏ hàng
+    syncCart: (state) => {
+      const currentUserId = localStorage.getItem("userId");
+      if (currentUserId) {
+        // Lấy giỏ hàng của người dùng từ localStorage
+        const userCart = JSON.parse(localStorage.getItem(`cart_${currentUserId}`)) || [];
+        
+        // Lấy giỏ hàng tạm thời
+        const tempCart = JSON.parse(localStorage.getItem(tempCartKey)) || [];
+
+        // Tạo một Map để lưu trữ sản phẩm theo productId
+        const cartMap = new Map();
+
+        // Thêm các sản phẩm từ giỏ hàng của người dùng vào Map
+        userCart.forEach(item => {
+          cartMap.set(item.productId, { ...item });
+        });
+
+        // Thêm hoặc cập nhật các sản phẩm từ giỏ hàng tạm thời
+        tempCart.forEach(item => {
+          const existingItem = cartMap.get(item.productId);
+          if (existingItem) {
+            // Nếu sản phẩm đã có, cộng dồn số lượng
+            existingItem.quantity += item.quantity;
+          } else {
+            // Nếu chưa có, thêm sản phẩm mới
+            cartMap.set(item.productId, { ...item, selected: true });
+          }
+        });
+
+        // Chuyển Map thành mảng
+        const mergedCart = Array.from(cartMap.values());
+
+        // Cập nhật state
+        state.cartItems = mergedCart;
+        state.cartCount = mergedCart.reduce((acc, item) => acc + item.quantity, 0);
+
+        // Lưu vào localStorage
+        localStorage.setItem(`cart_${currentUserId}`, JSON.stringify(mergedCart));
+        localStorage.removeItem(tempCartKey);
       }
     },
 
@@ -110,46 +154,9 @@ const cartSlice = createSlice({
       );
 
       // Cập nhật giỏ hàng vào localStorage
-      if (userId) {
-        localStorage.setItem(userCartKey, JSON.stringify(state.cartItems));
-      } else {
-        localStorage.setItem(tempCartKey, JSON.stringify(state.cartItems));
-      }
-    },
-
-    // Đồng bộ giỏ hàng với localStorage khi ứng dụng khởi tạo
-    syncCartWithLocalStorage: (state) => {
-      const savedCart =
-        JSON.parse(localStorage.getItem(userId ? userCartKey : tempCartKey)) ||
-        [];
-      state.cartItems = savedCart;
-      state.cartCount = savedCart.reduce((acc, item) => acc + item.quantity, 0);
-    },
-
-    // Xóa giỏ hàng khi đăng xuất
-    clearCart: (state) => {
-      state.cartItems = [];
-      state.cartCount = 0;
-      // Xóa giỏ hàng trong localStorage khi đăng xuất
-      if (userId) {
-        localStorage.removeItem(userCartKey);
-      } else {
-        localStorage.removeItem(tempCartKey);
-      }
-    },
-
-    // Toggle chọn sản phẩm (dành cho việc chọn/mở chọn sản phẩm trong giỏ)
-    toggleSelectProduct: (state, action) => {
-      const productId = action.payload;
-      const product = state.cartItems.find(
-        (item) => item.productId === productId
-      );
-      if (product) {
-        product.selected = !product.selected;
-      }
-      // Cập nhật lại giỏ hàng vào localStorage
-      if (userId) {
-        localStorage.setItem(userCartKey, JSON.stringify(state.cartItems));
+      const currentUserId = localStorage.getItem("userId");
+      if (currentUserId) {
+        localStorage.setItem(`cart_${currentUserId}`, JSON.stringify(state.cartItems));
       } else {
         localStorage.setItem(tempCartKey, JSON.stringify(state.cartItems));
       }
@@ -165,9 +172,30 @@ const cartSlice = createSlice({
         (acc, item) => acc + item.quantity,
         0
       );
+
       // Cập nhật giỏ hàng vào localStorage
-      if (userId) {
-        localStorage.setItem(userCartKey, JSON.stringify(state.cartItems));
+      const currentUserId = localStorage.getItem("userId");
+      if (currentUserId) {
+        localStorage.setItem(`cart_${currentUserId}`, JSON.stringify(state.cartItems));
+      } else {
+        localStorage.setItem(tempCartKey, JSON.stringify(state.cartItems));
+      }
+    },
+
+    // Toggle chọn sản phẩm
+    toggleSelectProduct: (state, action) => {
+      const productId = action.payload;
+      const product = state.cartItems.find(
+        (item) => item.productId === productId
+      );
+      if (product) {
+        product.selected = !product.selected;
+      }
+
+      // Cập nhật giỏ hàng vào localStorage
+      const currentUserId = localStorage.getItem("userId");
+      if (currentUserId) {
+        localStorage.setItem(`cart_${currentUserId}`, JSON.stringify(state.cartItems));
       } else {
         localStorage.setItem(tempCartKey, JSON.stringify(state.cartItems));
       }
@@ -180,25 +208,40 @@ const cartSlice = createSlice({
         (acc, item) => acc + item.quantity,
         0
       );
+
       // Cập nhật localStorage
-      if (userId) {
-        localStorage.setItem(userCartKey, JSON.stringify(state.cartItems));
+      const currentUserId = localStorage.getItem("userId");
+      if (currentUserId) {
+        localStorage.setItem(`cart_${currentUserId}`, JSON.stringify(state.cartItems));
       } else {
         localStorage.setItem(tempCartKey, JSON.stringify(state.cartItems));
+      }
+    },
+
+    // Xóa toàn bộ giỏ hàng
+    clearCart: (state) => {
+      state.cartItems = [];
+      state.cartCount = 0;
+
+      // Xóa giỏ hàng trong localStorage
+      const currentUserId = localStorage.getItem("userId");
+      if (currentUserId) {
+        localStorage.removeItem(`cart_${currentUserId}`);
+      } else {
+        localStorage.removeItem(tempCartKey);
       }
     },
   },
 });
 
-// Xuất các action đã tạo để sử dụng trong component
 export const {
   addToCart,
   removeFromCart,
   updateQuantity,
   toggleSelectProduct,
-  syncCartWithLocalStorage,
   removeSelectedItems,
   clearCart,
+  syncCart,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

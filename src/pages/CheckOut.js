@@ -52,25 +52,34 @@ const App = () => {
   const total = subtotal + shippingFee;
 
   const handlePlaceOrder = async () => {
-    console.log("fdfdsfdfd");
+    console.log("Bắt đầu xử lý đơn hàng...");
+    
     if (checkoutData.length === 0) {
       console.log("Giỏ hàng không có sản phẩm.");
       setPaymentError("Giỏ hàng không có sản phẩm.");
       setIsProcessing(false);
       return;
     }
+
     const storedAddress = sessionStorage.getItem("selectedAddress");
     if (storedAddress) {
-      setSelectedAddress(JSON.parse(storedAddress)); // Nếu có, set địa chỉ vào state
+      setSelectedAddress(JSON.parse(storedAddress));
     }
+    
     if (!selectedAddress) {
       alert("Vui lòng chọn địa chỉ giao hàng.");
       setIsProcessing(false);
       return;
     }
 
-    setIsProcessing(true); // Bắt đầu xử lý đơn hàng
-    console.log("Đang gửi yêu cầu đặt hàng..."); // Thêm dòng này để kiểm tra
+    // Validate address data
+    if (!selectedAddress.address || !selectedAddress.customerName || !selectedAddress.phoneNumber) {
+      alert("Thông tin địa chỉ không đầy đủ. Vui lòng kiểm tra lại.");
+      setIsProcessing(false);
+      return;
+    }
+
+    setIsProcessing(true);
 
     try {
       // Bước 1: Lấy priceId cho từng sản phẩm
@@ -80,48 +89,112 @@ const App = () => {
         )
           .then((response) => response.json())
           .then((data) => {
-            // Kiểm tra dữ liệu trả về
             if (data?.data?.content?.length > 0) {
-              // Lấy priceHistory gần nhất (sắp xếp theo priceChangeEffectiveDate desc)
               const latestPriceHistory = data.data.content[0];
-              return latestPriceHistory.privateHistoryId; // Trả về privateHistoryId của giá mới nhất
+              return latestPriceHistory.privateHistoryId;
             } else {
-              return null; // Nếu không có lịch sử giá, trả về null
+              console.error(`Không tìm thấy lịch sử giá cho sản phẩm ${product.productId}`);
+              return null;
             }
+          })
+          .catch(error => {
+            console.error(`Lỗi khi lấy lịch sử giá cho sản phẩm ${product.productId}:`, error);
+            return null;
           })
       );
 
-      // Chờ tất cả lời gọi API hoàn tất
       const priceIds = await Promise.all(priceHistoryPromises);
-      console.log("priceIds", priceIds);
+      console.log("Danh sách priceIds:", priceIds);
 
-      if (priceIds.some((id) => id === null)) {
-        alert("Không thể lấy thông tin giá cho một số sản phẩm.");
+      // Kiểm tra xem có priceId nào bị null không
+      const invalidPriceIds = priceIds.filter(id => id === null);
+      if (invalidPriceIds.length > 0) {
+        alert("Không thể lấy thông tin giá cho một số sản phẩm. Vui lòng thử lại sau.");
         setIsProcessing(false);
         return;
       }
-      console.log("testPrice2", priceIds[2]);
 
       // Bước 3: Tạo `orderDetails` với `priceId`
-      const orderDetails = checkoutData.map((product, index) => ({
-        productId: product.productId, // ID sản phẩm
-        quantity: product.quantity, // Số lượng
-        price: product.currentPrice?.newPrice, // Giá hiện tại
-        priceHistoryId: priceIds[index], // `priceId` lấy từ API
-      }));
+      const orderDetails = checkoutData.map((product, index) => {
+        if (!product.currentPrice?.newPrice) {
+          console.error(`Sản phẩm ${product.productId} không có giá`);
+          return null;
+        }
+        return {
+          productId: product.productId,
+          quantity: product.quantity,
+          price: product.currentPrice.newPrice,
+          priceHistoryId: priceIds[index],
+        };
+      }).filter(detail => detail !== null);
+
+      if (orderDetails.length !== checkoutData.length) {
+        alert("Có lỗi trong thông tin sản phẩm. Vui lòng kiểm tra lại.");
+        setIsProcessing(false);
+        return;
+      }
 
       // Bước 4: Tạo đối tượng `orderRequestDTO`
       const orderRequestDTO = {
-        note: note || "", // Ghi chú đơn hàng (có thể để trống)
-        address: selectedAddress.address, // Địa chỉ
-        customerName: selectedAddress.customerName, // Tên khách hàng
-        phoneNumber: selectedAddress.phoneNumber, // Số điện thoại
-        provinceId: selectedAddress.province.provinceId, // ID tỉnh
-        districtId: selectedAddress.district.districtId, // ID quận/huyện
-        wardId: selectedAddress.ward.wardId, // ID phường/xã
+        note: note || "",
+        address: selectedAddress.address,
+        customerName: selectedAddress.customerName,
+        phoneNumber: selectedAddress.phoneNumber,
+        provinceId: selectedAddress.province.provinceId,
+        districtId: selectedAddress.district.districtId,
+        wardId: selectedAddress.ward.wardId,
         userId: userId,
-        orderDetails, // Chi tiết đơn hàng
+        orderDetails: orderDetails.map(detail => ({
+          productId: detail.productId,
+          quantity: detail.quantity,
+          price: detail.price,
+          priceHistoryId: detail.priceHistoryId
+        }))
       };
+
+      // Validate orderRequestDTO
+      const requiredFields = [
+        'address',
+        'customerName',
+        'phoneNumber',
+        'provinceId',
+        'districtId',
+        'wardId',
+        'userId',
+        'orderDetails'
+      ];
+
+      const missingFields = requiredFields.filter(field => !orderRequestDTO[field]);
+      if (missingFields.length > 0) {
+        console.error('Thiếu các trường bắt buộc:', missingFields);
+        alert('Thiếu thông tin bắt buộc. Vui lòng kiểm tra lại.');
+        setIsProcessing(false);
+        return;
+      }
+
+      // Validate orderDetails
+      if (!orderRequestDTO.orderDetails || orderRequestDTO.orderDetails.length === 0) {
+        console.error('Không có chi tiết đơn hàng');
+        alert('Không có sản phẩm trong đơn hàng');
+        setIsProcessing(false);
+        return;
+      }
+
+      const invalidOrderDetails = orderRequestDTO.orderDetails.filter(detail => 
+        !detail.productId || 
+        !detail.quantity || 
+        !detail.price || 
+        !detail.priceHistoryId
+      );
+
+      if (invalidOrderDetails.length > 0) {
+        console.error('Chi tiết đơn hàng không hợp lệ:', invalidOrderDetails);
+        alert('Có sản phẩm không hợp lệ trong đơn hàng');
+        setIsProcessing(false);
+        return;
+      }
+
+      console.log("Dữ liệu đơn hàng sẽ gửi:", JSON.stringify(orderRequestDTO, null, 2));
 
       // Bước 5: Gửi yêu cầu tạo đơn hàng
       const orderResponse = await fetch("http://localhost:8081/api/orders", {
@@ -134,24 +207,34 @@ const App = () => {
       });
 
       if (!orderResponse.ok) {
-        throw new Error(
-          `Error creating order! Status: ${orderResponse.status}`
-        );
+        const errorData = await orderResponse.json();
+        console.error("Chi tiết lỗi từ server:", errorData);
+        
+        // Xử lý lỗi cụ thể
+        if (errorData.errors?.status === 'Account is not active to create order') {
+          alert('Tài khoản của bạn chưa được kích hoạt để tạo đơn hàng. Vui lòng liên hệ quản trị viên để được hỗ trợ.');
+          setIsProcessing(false);
+          return;
+        }
+        
+        throw new Error(`Lỗi tạo đơn hàng! Status: ${orderResponse.status}`);
       }
 
       const orderData = await orderResponse.json();
       console.log("Đơn hàng đã được tạo thành công:", orderData);
       alert("Tạo đơn hàng thành công");
+      
       // Xóa sản phẩm khỏi giỏ hàng sau khi tạo đơn hàng thành công
       checkoutData.forEach((product) => {
         dispatch(removeFromCart(product.productId));
       });
+      
       navigate("/");
     } catch (error) {
       console.error("Lỗi trong quá trình xử lý đơn hàng:", error);
-      setPaymentError("Đã xảy ra lỗi trong quá trình xử lý đơn hàng.");
+      alert(error.message || "Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại sau.");
     } finally {
-      setIsProcessing(false); // Kết thúc quá trình xử lý
+      setIsProcessing(false);
     }
   };
 
