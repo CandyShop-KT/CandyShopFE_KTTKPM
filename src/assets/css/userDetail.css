@@ -181,7 +181,16 @@
     color: #ff4d4f !important; /* Màu đỏ error của AntD */
   }
   
-  /* Cảnh báo (nếu có dùng) */
   .ant-message-warning .ant-message-custom-content span {
     color: #faad14 !important; /* Màu vàng warning của AntD */
+  }
+  .user-avatar-section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .avatar-wrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }

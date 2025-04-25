@@ -171,16 +171,18 @@ const UserDetail = () => {
         <Card className="user-detail-card">
           <div className="user-profile-header">
             <div className="user-avatar-section">
+              <div className="avatar-wrapper">
               <Avatar size={120} src={user?.avatarUrl} icon={<UserOutlined />} />
               <Upload
                 name="avatar"
                 showUploadList={false}
                 onChange={handleUploadAvatar}
               >
-                <Button icon={<UploadOutlined />} size="small" className="upload-button">
+                <Button icon={<UploadOutlined />} size="small" className="upload-button" type="primary">
                   Thay đổi ảnh
                 </Button>
               </Upload>
+              </div>
             </div>
             <div className="user-info-header">
               <h2 className="user-name">{`${user?.firstName} ${user?.lastName}`}</h2>
