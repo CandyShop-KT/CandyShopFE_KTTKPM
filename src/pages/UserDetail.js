@@ -63,7 +63,7 @@ const UserDetail = () => {
         firstName: response.data.data.firstName,
         lastName: response.data.data.lastName,
         email: response.data.data.email,
-        phone: response.data.data.phoneNumber,
+        phoneNumber: response.data.data.phoneNumber,
         gender: response.data.data.gender,
         birthDay: response.data.data.birthDay ? moment(response.data.data.birthDay) : null,
         role: response.data.data.role
@@ -82,6 +82,7 @@ const UserDetail = () => {
   };
 
   const handleSave = async (values) => {
+    console.log("Giá trị form khi lưu:", values);
     try {
       await axios.patch(`${api}users/${userId}`, values, {
         headers: { Authorization: `Bearer ${token}` },
@@ -315,9 +316,12 @@ const UserDetail = () => {
                 <Input prefix={<MailOutlined />} disabled />
               </Form.Item>
               <Form.Item
-                name="phone"
+                name="phoneNumber"
                 label="Số điện thoại"
-                rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
+                rules={[
+                     { required: true, message: "Vui lòng nhập số điện thoại" },
+                      { pattern: /^[0-9]{10}$/, message: "Số điện thoại phải có 10 chữ số" },
+                 ]}
               >
                 <Input prefix={<PhoneOutlined />} />
               </Form.Item>
