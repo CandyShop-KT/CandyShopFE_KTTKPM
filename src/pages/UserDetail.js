@@ -139,6 +139,24 @@ const UserDetail = () => {
       onError(error); // báo lỗi cho Upload
     }
   };
+  const handleRoleChange= async (newRole)=>{
+    try {
+      await axios.patch(
+        `${api}user/${userId}/role`,
+        {},
+        { 
+          params: { role:newRole },
+          headers: {Authorization:`Bearer ${token}`}
+        }
+      );
+      message.success("Cập nhật vai trò thành công");
+      fetchUserDetails(); //load lại dữ liệu mới
+      
+    } catch (error) {
+      message.error("Không thể cập nhật vai trò");
+      
+    }
+  };
   
 
 
