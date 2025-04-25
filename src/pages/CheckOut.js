@@ -18,6 +18,8 @@ const App = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [note, setNote] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(null);
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
   const { checkoutData } = useSelector((state) => state.checkout);
@@ -222,7 +224,8 @@ const App = () => {
 
       const orderData = await orderResponse.json();
       console.log("Đơn hàng đã được tạo thành công:", orderData);
-      alert("Tạo đơn hàng thành công");
+      setOrderSuccess(orderData);
+      setShowSuccessModal(true);
       
       // Xóa sản phẩm khỏi giỏ hàng sau khi tạo đơn hàng thành công
       checkoutData.forEach((product) => {
@@ -236,6 +239,12 @@ const App = () => {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  // Hàm xử lý khi đóng modal
+  const handleCloseModal = () => {
+    setShowSuccessModal(false);
+    navigate("/");
   };
 
   return (
@@ -341,6 +350,53 @@ const App = () => {
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-success text-white">
+                <h5 className="modal-title">
+                  <i className="fas fa-check-circle me-2"></i>
+                  Đặt hàng thành công!
+                </h5>
+                <button type="button" className="btn-close btn-close-white" onClick={handleCloseModal}></button>
+              </div>
+              <div className="modal-body">
+                <div className="text-center mb-4">
+                  <i className="fas fa-shopping-bag fa-3x text-success mb-3"></i>
+                  <h4>Cảm ơn bạn đã đặt hàng!</h4>
+                </div>
+                <div className="order-details">
+                  <h6 className="fw-bold">Chi tiết đơn hàng:</h6>
+                  <p><strong>Địa chỉ giao hàng:</strong> {selectedAddress?.address}</p>
+                  <p><strong>Người nhận:</strong> {selectedAddress?.customerName}</p>
+                  <p><strong>Số điện thoại:</strong> {selectedAddress?.phoneNumber}</p>
+                  <p><strong>Phương thức thanh toán:</strong> {paymentMethod === 'COD' ? 'Thanh toán khi nhận hàng' : 'Thẻ tín dụng/ghi nợ'}</p>
+                  <div className="border-top pt-3 mt-3">
+                    <p className="mb-1"><strong>Tổng giá trị đơn hàng:</strong></p>
+                    <h5 className="text-danger">
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(total)}
+                    </h5>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
+                  Đóng
+                </button>
+                <button type="button" className="btn btn-primary" onClick={() => navigate('/product')}>
+                  Tiếp tục mua sắm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -15,6 +15,38 @@ const Cart = () => {
   const [confirmDelete, setConfirmDelete] = useState(null); // Trạng thái cho thông báo xác nhận
   const navigate = useNavigate();
 
+  // Thêm state để lưu giá trị input tạm thời
+  const [tempQuantities, setTempQuantities] = useState({});
+
+  // Hàm xử lý khi người dùng thay đổi input
+  const handleQuantityChange = (productId, value) => {
+    // Cập nhật giá trị tạm thời
+    setTempQuantities({
+      ...tempQuantities,
+      [productId]: value
+    });
+  };
+
+  // Hàm xử lý khi người dùng nhấn Enter hoặc input mất focus
+  const handleQuantitySubmit = (productId, currentQuantity) => {
+    const newQuantity = parseInt(tempQuantities[productId]);
+    
+    // Kiểm tra nếu giá trị hợp lệ
+    if (!isNaN(newQuantity) && newQuantity > 0) {
+      // Tính toán delta (chênh lệch) để cập nhật
+      const delta = newQuantity - currentQuantity;
+      if (delta !== 0) {
+        dispatch(updateQuantity({ productId, delta }));
+      }
+    }
+    
+    // Xóa giá trị tạm thời
+    setTempQuantities({
+      ...tempQuantities,
+      [productId]: undefined
+    });
+  };
+
   // Tính tổng giá tiền các sản phẩm được chọn
   const calculateSelectedTotal = () => {
     return cartItems.reduce((total, item) => {
@@ -83,12 +115,18 @@ const Cart = () => {
                   />
                   <div>
                     <h5>{item.productName}</h5>
+                    <p className="text-danger mb-0">
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(item.currentPrice?.newPrice || 0)}
+                    </p>
                   </div>
                 </div>
                 <div className="col-md-6 d-flex justify-content-between align-items-center mr-2">
                   <div className="mr-2">
-                    <p className="mb-1">Giá</p>
-                    <p className="font-weight-bold">
+                    <p className="mb-1">Tổng tiền</p>
+                    <p className="font-weight-bold text-danger">
                       {new Intl.NumberFormat("vi-VN", {
                         style: "currency",
                         currency: "VND",
@@ -117,9 +155,16 @@ const Cart = () => {
                     </button>
                     <input
                       type="text"
-                      value={item.quantity || 0}
+                      value={tempQuantities[item.productId] !== undefined ? tempQuantities[item.productId] : item.quantity}
                       className="form-control text-center mx-2"
                       style={{ width: "50px" }}
+                      onChange={(e) => handleQuantityChange(item.productId, e.target.value)}
+                      onBlur={() => handleQuantitySubmit(item.productId, item.quantity)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.target.blur();
+                        }
+                      }}
                     />
                     <button
                       className="btn btn-outline-secondary border"
