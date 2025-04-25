@@ -66,6 +66,7 @@ const UserDetail = () => {
         phone: response.data.data.phoneNumber,
         gender: response.data.data.gender,
         birthDay: response.data.data.birthDay ? moment(response.data.data.birthDay) : null,
+        role: response.data.data.role
       });
       setLoading(false);
     } catch (error) {
@@ -139,27 +140,27 @@ const UserDetail = () => {
       onError(error); // báo lỗi cho Upload
     }
   };
-  const handleRoleChange= async (newRole)=>{
+  
+  const handleRoleChange = async (newRole) => {
     try {
       await axios.patch(
-        `${api}user/${userId}/role`,
-        {},
-        { 
-          params: { role:newRole },
-          headers: {Authorization:`Bearer ${token}`}
+        `${api}users/${userId}/role?role=${newRole}`, // Gửi role dưới dạng query param
+        {}, // body rỗng
+        {
+          headers: { Authorization: `Bearer ${token}` }
         }
       );
       message.success("Cập nhật vai trò thành công");
-      fetchUserDetails(); //load lại dữ liệu mới
-      
+      fetchUserDetails(); 
     } catch (error) {
+      console.error("Error during role change:", error);
       message.error("Không thể cập nhật vai trò");
-      
     }
   };
   
-
-
+  
+  
+  
   const getRoleTag = (role) => {
     switch (role) {
       case "ADMIN":
@@ -209,8 +210,22 @@ const UserDetail = () => {
               <h2 className="user-name">{`${user?.firstName} ${user?.lastName}`}</h2>
               <div style={{display:'flex', justifyContent:'center', marginTop:20}}>
               <Space>
-                {getRoleTag(user?.role)}
-                {getStatusTag(user?.status)}
+              {editMode ? (
+                    <Select
+                      value={form.getFieldValue("role")} // Đảm bảo rằng role được set chính xác từ form
+                      style={{ width: 120 }}
+                      onChange={(value) => {
+                        form.setFieldValue("role", value); // Cập nhật role trong form
+                        handleRoleChange(value); // Cập nhật role lên backend
+                      }}
+                    >
+                      <Option value="USER">User</Option>
+                      <Option value="ADMIN">Admin</Option>
+                    </Select>
+                  ) : (
+                    getRoleTag(user?.role)
+                  )}
+              {getStatusTag(user?.status)}
               </Space>
               </div>
             </div>
