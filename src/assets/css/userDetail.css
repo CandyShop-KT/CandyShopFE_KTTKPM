@@ -164,3 +164,24 @@
   .grey-form-item .ant-picker-input > input {
     color: grey !important;
   }
+
+
+/* Mặc định: màu đen nếu không xác định loại */
+.ant-message .ant-message-custom-content span {
+    color: rgba(0, 0, 0, 0.88);
+  }
+  
+  /* Thành công -> xanh */
+  .ant-message-success .ant-message-custom-content span {
+    color: #52c41a !important; /* Màu xanh success của AntD */
+  }
+  
+  /* Thất bại -> đỏ */
+  .ant-message-error .ant-message-custom-content span {
+    color: #ff4d4f !important; /* Màu đỏ error của AntD */
+  }
+  
+  /* Cảnh báo (nếu có dùng) */
+  .ant-message-warning .ant-message-custom-content span {
+    color: #faad14 !important; /* Màu vàng warning của AntD */
+  }
