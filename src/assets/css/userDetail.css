@@ -1,0 +1,165 @@
+.user-detail-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  .user-detail-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+  }
+  
+  .user-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  
+  .user-avatar-section {
+    text-align: center;
+  }
+  
+  .user-avatar-section .ant-avatar {
+    border: 2px solid #e8e8e8;
+  }
+  
+  .upload-button {
+    margin-top: 8px;
+    font-size: 12px;
+  }
+  
+  .user-info-header {
+    flex: 1;
+  }
+  
+  .user-name {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
+  .user-actions .ant-space {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .user-form {
+    margin-top: 16px;
+  }
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  .form-row .ant-form-item {
+    margin-bottom: 16px;
+  }
+  
+  .form-row .ant-form-item-label {
+    font-weight: 500;
+  }
+  
+  .ant-divider {
+    margin: 24px 0;
+  }
+  
+  .loading {
+    text-align: center;
+    font-size: 16px;
+    padding: 24px;
+  }
+  
+  /* Input and Icon Styling */
+  .user-form .ant-input-prefix {
+    color: #8c8c8c; /* Gray for prefix icons in view mode */
+    margin-right: 8px;
+  }
+  
+  .user-form .ant-input,
+  .user-form .ant-input-password .ant-input {
+    color: #595959; /* Darker gray for text in view mode */
+  }
+  
+  .user-form .ant-input-disabled,
+  .user-form .ant-input-password .ant-input-disabled {
+    background-color: #f5f5f5; /* Light gray background for disabled inputs */
+    color: #595959; /* Ensure text remains visible */
+  }
+  
+  .user-form .ant-select:not(.ant-select-disabled) .ant-select-selector,
+  .user-form .ant-picker:not(.ant-picker-disabled) .ant-picker-input {
+    color: #1890ff; /* Blue for editable fields */
+  }
+  
+  .user-form .ant-select-disabled .ant-select-selector,
+  .user-form .ant-picker-disabled .ant-picker-input {
+    color: #595959; /* Gray for disabled select and date picker */
+    background-color: #f5f5f5;
+  }
+  
+  .user-form .ant-select-arrow,
+  .user-form .ant-picker-suffix {
+    color: #8c8c8c; /* Gray for select arrow and date picker icon in view mode */
+  }
+  
+  .user-form .ant-select:not(.ant-select-disabled) .ant-select-arrow,
+  .user-form .ant-picker:not(.ant-picker-disabled) .ant-picker-suffix {
+    color: #1890ff; /* Blue for editable select arrow and date picker icon */
+  }
+  
+  /* Modal Input Styling */
+  .ant-modal .ant-input,
+  .ant-modal .ant-input-password .ant-input {
+    color: #1890ff; /* Blue for modal input text */
+  }
+  
+  .ant-modal .ant-input-prefix,
+  .ant-modal .ant-picker-suffix,
+  .ant-modal .ant-select-arrow {
+    color: #1890ff; /* Blue for modal prefix icons */
+  }
+  
+  @media (max-width: 768px) {
+    .user-profile-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* Tag Styling */
+  .ant-tag-red {
+    background-color: #ff4d4f;
+    color: white;
+  }
+  
+  .ant-tag-blue {
+    background-color: #1890ff;
+    color: white;
+  }
+  
+  .ant-tag-green {
+    background-color: #52c41a;
+    color: white;
+  }
+  
+  .ant-tag-gray {
+    background-color: #d9d9d9;
+    color: #595959;
+  }
+
+  .grey-text-select .ant-select-selection-item{
+    color: #595959;
+  }
+  
+  .grey-form-item .ant-picker, 
+  .grey-form-item .ant-picker-input > input {
+    color: grey !important;
+  }
