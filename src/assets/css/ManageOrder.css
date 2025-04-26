@@ -7,10 +7,16 @@
   border-bottom: 2px solid #8b5e3c;
 }
 
-.manage-order-container {
+/* .manage-order-container {
   padding: 24px;
   background-color: #f8f4f1;
-  min-height: 100vh;
+  overflow: auto;
+} */
+
+.manage-order-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 10px 16px; /* hoặc 0 nếu muốn sát lề */
 }
 
 .order-card {

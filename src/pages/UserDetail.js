@@ -29,7 +29,7 @@ import {
 import axios from "axios";
 import moment from "moment";
 import AdminLayout from "../layouts/AdminLayout";
-import "../assets/css/manageUser.css";
+import "../assets/css/userDetail.css"; // Updated CSS file
 
 const { Option } = Select;
 
@@ -40,8 +40,7 @@ const UserDetail = () => {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [form] = Form.useForm();
-  const [changePasswordModalVisible, setChangePasswordModalVisible] =
-    useState(false);
+  const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
   const [changeEmailModalVisible, setChangeEmailModalVisible] = useState(false);
   const [passwordForm] = Form.useForm();
   const [emailForm] = Form.useForm();
@@ -64,11 +63,10 @@ const UserDetail = () => {
         firstName: response.data.data.firstName,
         lastName: response.data.data.lastName,
         email: response.data.data.email,
-        phone: response.data.data.phone,
+        phoneNumber: response.data.data.phoneNumber,
         gender: response.data.data.gender,
-        birthDay: response.data.data.birthDay
-          ? moment(response.data.data.birthDay)
-          : null,
+        birthDay: response.data.data.birthDay ? moment(response.data.data.birthDay) : null,
+        role: response.data.data.role
       });
       setLoading(false);
     } catch (error) {
@@ -77,16 +75,14 @@ const UserDetail = () => {
     }
   };
 
-  const handleEdit = () => {
-    setEditMode(true);
-  };
-
+  const handleEdit = () => setEditMode(true);
   const handleCancel = () => {
     setEditMode(false);
     form.resetFields();
   };
 
   const handleSave = async (values) => {
+    console.log("Giá trị form khi lưu:", values);
     try {
       await axios.patch(`${api}users/${userId}`, values, {
         headers: { Authorization: `Bearer ${token}` },
@@ -126,32 +122,52 @@ const UserDetail = () => {
     }
   };
 
-  const handleUploadAvatar = async (info) => {
-    if (info.file.status === "done") {
-      const formData = new FormData();
-      formData.append("file", info.file.originFileObj);
-
-      try {
-        await axios.patch(`${api}users/${userId}/avatar`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        message.success("Cập nhật ảnh đại diện thành công");
-        fetchUserDetails();
-      } catch (error) {
-        message.error("Không thể cập nhật ảnh đại diện");
-      }
+  const handleUploadAvatar = async ({ file, onSuccess, onError }) => {
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      await axios.patch(`${api}users/${userId}/avatar`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      message.success("Cập nhật ảnh đại diện thành công");
+      onSuccess(); // báo hiệu thành công cho Upload
+      fetchUserDetails(); // cập nhật lại avatar
+    } catch (error) {
+      message.error("Không thể cập nhật ảnh đại diện");
+      onError(error); // báo lỗi cho Upload
     }
   };
-
+  
+  const handleRoleChange = async (newRole) => {
+    try {
+      await axios.patch(
+        `${api}users/${userId}/role?role=${newRole}`, // Gửi role dưới dạng query param
+        {}, // body rỗng
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      // message.success("Cập nhật vai trò thành công");
+      fetchUserDetails(); 
+    } catch (error) {
+      console.error("Error during role change:", error);
+      message.error("Không thể cập nhật vai trò");
+    }
+  };
+  
+  
+  
+  
   const getRoleTag = (role) => {
     switch (role) {
       case "ADMIN":
-        return <Tag className="ant-tag-admin">Admin</Tag>;
+        return <Tag color="red">Admin</Tag>;
       case "USER":
-        return <Tag className="ant-tag-user">User</Tag>;
+        return <Tag color="blue">User</Tag>;
       default:
         return <Tag>{role}</Tag>;
     }
@@ -160,52 +176,67 @@ const UserDetail = () => {
   const getStatusTag = (status) => {
     switch (status) {
       case "ACTIVE":
-        return <Tag className="ant-tag-active">Hoạt động</Tag>;
+        return <Tag color="green">Hoạt động</Tag>;
       case "INACTIVE":
-        return <Tag className="ant-tag-inactive">Không hoạt động</Tag>;
+        return <Tag color="gray">Không hoạt động</Tag>;
       default:
         return <Tag>{status}</Tag>;
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="loading">Đang tải...</div>;
   }
 
   return (
     <AdminLayout>
       <div className="user-detail-container">
-        <Card className="user-detail-card" loading={loading}>
+        <Card className="user-detail-card">
           <div className="user-profile-header">
             <div className="user-avatar-section">
-              <Avatar
-                size={120}
-                src={user?.avatarUrl}
-                icon={<UserOutlined />}
-              />
+              <div className="avatar-wrapper">
+              <Avatar size={120} key={user?.avatarUrl} src={user?.avatarUrl} icon={<UserOutlined />} />
               <Upload
                 name="avatar"
                 showUploadList={false}
-                onChange={handleUploadAvatar}
+                customRequest={handleUploadAvatar}
               >
-                <Button icon={<UploadOutlined />}>Thay đổi ảnh</Button>
+                <Button icon={<UploadOutlined />} size="small" className="upload-button" type="primary">
+                  Thay đổi ảnh
+                </Button>
               </Upload>
+              </div>
             </div>
             <div className="user-info-header">
-              <h2>
-                {user?.firstName} {user?.lastName}
-              </h2>
+              <h2 className="user-name">{`${user?.firstName} ${user?.lastName}`}</h2>
+              <div style={{display:'flex', justifyContent:'center', marginTop:20}}>
               <Space>
-                {getRoleTag(user?.role)}
-                {getStatusTag(user?.status)}
+              {editMode ? (
+                    <Select
+
+                      value={form.getFieldValue("role")} // Đảm bảo rằng role được set chính xác từ form
+                      style={{ width: 120, color:'black' }}
+                      onChange={(value) => {
+                        form.setFieldValue("role", value); // Cập nhật role trong form
+                        handleRoleChange(value); // Cập nhật role lên backend
+                      }}
+                    >
+                      <Option value="USER">User</Option>
+                      <Option value="ADMIN">Admin</Option>
+                    </Select>
+                  ) : (
+                    getRoleTag(user?.role)
+                  )}
+              {getStatusTag(user?.status)}
               </Space>
+              </div>
             </div>
           </div>
 
           <Divider />
 
           <div className="user-actions">
-            <Space>
+            <Space wrap>
               <Button
                 type="primary"
                 icon={<EnvironmentOutlined />}
@@ -214,28 +245,28 @@ const UserDetail = () => {
                 Quản lý địa chỉ
               </Button>
               <Button
+                type="primary"
                 icon={<LockOutlined />}
                 onClick={() => setChangePasswordModalVisible(true)}
               >
                 Đổi mật khẩu
               </Button>
               <Button
+                type="primary"
                 icon={<MailOutlined />}
                 onClick={() => setChangeEmailModalVisible(true)}
               >
                 Đổi email
               </Button>
               {!editMode ? (
-                <Button
-                  type="primary"
-                  icon={<EditOutlined />}
-                  onClick={handleEdit}
-                >
+                <Button type="primary" icon={<EditOutlined />} onClick={handleEdit}>
                   Chỉnh sửa
                 </Button>
               ) : (
                 <Space>
-                  <Button onClick={handleCancel}>Hủy</Button>
+                  <Button onClick={handleCancel}
+                  type="primary"
+                  >Hủy</Button>
                   <Button
                     type="primary"
                     icon={<SaveOutlined />}
@@ -255,6 +286,7 @@ const UserDetail = () => {
             layout="vertical"
             onFinish={handleSave}
             disabled={!editMode}
+            className="user-form"
           >
             <div className="form-row">
               <Form.Item
@@ -272,7 +304,6 @@ const UserDetail = () => {
                 <Input prefix={<UserOutlined />} />
               </Form.Item>
             </div>
-
             <div className="form-row">
               <Form.Item
                 name="email"
@@ -285,35 +316,34 @@ const UserDetail = () => {
                 <Input prefix={<MailOutlined />} disabled />
               </Form.Item>
               <Form.Item
-                name="phone"
+                name="phoneNumber"
                 label="Số điện thoại"
                 rules={[
-                  { required: true, message: "Vui lòng nhập số điện thoại" },
-                ]}
+                     { required: true, message: "Vui lòng nhập số điện thoại" },
+                      { pattern: /^[0-9]{10}$/, message: "Số điện thoại phải có 10 chữ số" },
+                 ]}
               >
                 <Input prefix={<PhoneOutlined />} />
               </Form.Item>
             </div>
-
             <div className="form-row">
               <Form.Item name="gender" label="Giới tính">
-                <Select>
+                <Select className="grey-text-select">
                   <Option value="MALE">Nam</Option>
                   <Option value="FEMALE">Nữ</Option>
                   <Option value="OTHER">Khác</Option>
                 </Select>
               </Form.Item>
-              <Form.Item name="birthDay" label="Ngày sinh">
-                <DatePicker format="DD/MM/YYYY" />
+              <Form.Item name="birthDay" label="Ngày sinh" className="grey-form-item">
+                <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
               </Form.Item>
             </div>
           </Form>
         </Card>
 
-        {/* Change Password Modal */}
         <Modal
           title="Đổi mật khẩu"
-          visible={changePasswordModalVisible}
+          open={changePasswordModalVisible}
           onCancel={() => setChangePasswordModalVisible(false)}
           footer={null}
         >
@@ -332,9 +362,7 @@ const UserDetail = () => {
             <Form.Item
               name="newPassword"
               label="Mật khẩu mới"
-              rules={[
-                { required: true, message: "Vui lòng nhập mật khẩu mới" },
-              ]}
+              rules={[{ required: true, message: "Vui lòng nhập mật khẩu mới" }]}
             >
               <Input.Password />
             </Form.Item>
@@ -364,10 +392,9 @@ const UserDetail = () => {
           </Form>
         </Modal>
 
-        {/* Change Email Modal */}
         <Modal
           title="Đổi email"
-          visible={changeEmailModalVisible}
+          open={changeEmailModalVisible}
           onCancel={() => setChangeEmailModalVisible(false)}
           footer={null}
         >
