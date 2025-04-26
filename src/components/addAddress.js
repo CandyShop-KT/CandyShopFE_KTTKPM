@@ -100,6 +100,7 @@ const AddAddress = () => {
 
       console.log(response.data.message);
       toast.success("Thêm địa chỉ thành công");
+      navigate('/checkout');
       // Kiểm tra trước khi sử dụng sessionStorage
       const key = "userAddress"; // Bạn cần xác định key phù hợp ở đây
       if (key) {
