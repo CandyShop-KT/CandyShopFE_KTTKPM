@@ -105,7 +105,7 @@ const Product = ({ setCartCount }) => {
     dispatch(addToCart(product));
     // Hiển thị thông báo
     setNotification(`Đã thêm 1 sản phẩm vào giỏ hàng!`);
-    setTimeout(() => setNotification(null), 500); 
+    setTimeout(() => setNotification(null), 500);
   };
 
   return (
@@ -164,11 +164,7 @@ const Product = ({ setCartCount }) => {
         <div className="row">
           {products.length > 0 ? (
             products.map((product) => (
-              <div
-                className="product-card"
-                key={product.productId}
-               
-              >
+              <div className="product-card" key={product.productId}>
                 <div className="image-container">
                   <img
                     src={product.mainImageUrl}
@@ -176,7 +172,9 @@ const Product = ({ setCartCount }) => {
                     className="product-image"
                   />
                   <div className="overlay">
-                    <h3  onClick={() => handleViewDetail(product.productId)} >Xem chi tiết</h3>
+                    <h3 onClick={() => handleViewDetail(product.productId)}>
+                      Xem chi tiết
+                    </h3>
                   </div>
                 </div>
 

@@ -37,6 +37,7 @@ import ManageOrder from "./pages/ManageOrder";
 import UserDetail from "./pages/UserDetail";
 import UserAddress from "./pages/UserAddress";
 import AddUser from "./pages/AddUser";
+import ProductManagement from "./pages/Admin/ProductManagement";
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -86,11 +87,7 @@ function App() {
           />
           <Route path="/order/manage" element={<ManageOrder />} />
           <Route path="/admin/*" element={<AdminHome />} />
-          <Route
-            path="/product/manage/:productId"
-            element={<AddAndUpdateProduct />}
-          />
-          <Route path="/product/manage/" element={<AddAndUpdateProduct />} />
+
           <Route path="/admin/users" element={<ManageUser />} />
           <Route path="/admin/users/:userId" element={<UserDetail />} />
           <Route
@@ -98,6 +95,12 @@ function App() {
             element={<UserAddress />}
           />
           <Route path="/admin/users/add" element={<AddUser />} />
+          <Route path="/product/manage" element={<ProductManagement />} />
+          <Route path="/admin/product" element={<AddAndUpdateProduct />} />
+          <Route
+            path="/admin/product/:productId"
+            element={<AddAndUpdateProduct />}
+          />
         </Routes>
         <ToastContainer // Thêm ToastContainer tại đây
           position="top-right" // Vị trí thông báo

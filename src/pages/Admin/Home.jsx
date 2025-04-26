@@ -223,9 +223,9 @@ const AdminHome = () => {
                 type="primary"
                 block
                 className="action-button manage-categories"
-                onClick={() => navigate("/category/manage")}
+                onClick={() => navigate("/product/manage")}
               >
-                Quản lý danh mục
+                Quản lý sản phẩm & danh mục
               </Button>
             </Col>
           </Row>

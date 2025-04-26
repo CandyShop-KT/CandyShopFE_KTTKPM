@@ -2,19 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import "../assets/css/ProductDetail.css";
-import { useNavigate } from "react-router-dom";
 
 const ProductDetail = () => {
   const { productId } = useParams(); // Lấy productId từ URL
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [role, setRole] = useState("");
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const userRole = localStorage.getItem("role"); // Lấy vai trò từ localStorage
-    setRole(userRole);
     const fetchProductDetail = async () => {
       try {
         const response = await axios.get(
@@ -40,12 +35,6 @@ const ProductDetail = () => {
   const handleBuyNow = () => {
     // Logic để mua ngay sản phẩm
     console.log("Mua ngay sản phẩm:", product);
-  };
-
-  const handleEditProduct = () => {
-    // Logic để xử lý sửa sản phẩm, có thể chuyển hướng đến trang sửa sản phẩm
-    console.log("Sửa sản phẩm với ID:", productId);
-    navigate(`/product/manage/${productId}`); // Chuyển hướng đến trang chỉnh sửa sản phẩm
   };
 
   if (loading) {
@@ -82,12 +71,6 @@ const ProductDetail = () => {
             <button className="btn btn-buy-now" onClick={handleBuyNow}>
               Mua ngay
             </button>
-            {/* Hiển thị nút "Sửa sản phẩm" chỉ cho admin */}
-            {role === "ADMIN" && (
-              <button className="btn btn-warning" onClick={handleEditProduct}>
-                Sửa sản phẩm
-              </button>
-            )}
           </div>
         </div>
       )}
