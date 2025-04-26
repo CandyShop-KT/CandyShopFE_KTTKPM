@@ -201,3 +201,8 @@ button[type="primary"][style*="background-color: #52c41a"]:hover {
   background-color: #556b2f !important;
   border-color: #556b2f !important;
 }
+
+/* css cho radio bên addUser */
+.gender-radio-group .ant-radio-wrapper span {
+  color: #000 !important;
+}

@@ -119,7 +119,7 @@ const AddUser = () => {
         message.error('Bạn chỉ có thể tải lên file ảnh!');
         return false;
       }
-      const isLt2M = file.size / 1024 / 1024 < 2;
+      const isLt2M = file.size / 1024 / 1024 <2 ;
       if (!isLt2M) {
         message.error('Ảnh phải nhỏ hơn 2MB!');
         return false;
@@ -217,6 +217,7 @@ const AddUser = () => {
               <Form.Item
                 name="gender"
                 label="Giới tính"
+                className='gender-radio-group'
                 rules={[{ required: true, message: 'Vui lòng chọn giới tính' }]}
               >
                 <Radio.Group>
