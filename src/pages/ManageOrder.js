@@ -17,7 +17,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../layouts/AdminLayout";
 import "../assets/css/ManageOrder.css";
-
+import api from "../config/api";
 const { TabPane } = Tabs;
 
 const ManageOrder = () => {
@@ -35,7 +35,6 @@ const ManageOrder = () => {
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  const api = "http://localhost:8081/api/";
 
   useEffect(() => {
     const role = localStorage.getItem("role");

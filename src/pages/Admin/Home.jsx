@@ -10,7 +10,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
 import "./Home.css";
-
+import api from "../../config/api";
 const AdminHome = () => {
   const [statistics, setStatistics] = useState({
     totalOrders: 0,

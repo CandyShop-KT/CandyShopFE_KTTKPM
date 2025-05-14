@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../assets/css/orderDetailPage.css";
+import api from "../config/api";
 
 const OrderDetailPage = () => {
   const { orderId } = useParams(); // Lấy orderId từ URL
@@ -19,7 +20,7 @@ const OrderDetailPage = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:8081/api/orders/${orderId}/details?page=${page}&limit=${limit}`,
+        `${api}/orders/${orderId}/details?page=${page}&limit=${limit}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

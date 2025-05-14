@@ -3,6 +3,7 @@ import axios from "axios";
 import "../assets/css/addAddress.css";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import api from "../config/api";
 const AddAddress = () => {
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
@@ -24,7 +25,7 @@ const AddAddress = () => {
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const response = await axios.get("http://localhost:8081/api/provinces");
+        const response = await axios.get(`${api}/provinces`);
         setProvinces(response.data.data.content);
       } catch (error) {
         console.error("Error fetching provinces:", error);
@@ -39,7 +40,7 @@ const AddAddress = () => {
       if (selectedProvince) {
         try {
           const response = await axios.get(
-            `http://localhost:8081/api/provinces/${selectedProvince}/districts`
+            `${api}/provinces/${selectedProvince}/districts`
           );
           setDistricts(response.data.data.content);
         } catch (error) {
@@ -56,7 +57,7 @@ const AddAddress = () => {
       if (selectedDistrict) {
         try {
           const response = await axios.get(
-            `http://localhost:8081/api/districts/${selectedDistrict}/wards`
+            `${api}/districts/${selectedDistrict}/wards`
           );
           setWards(response.data.data.content);
         } catch (error) {
@@ -88,7 +89,7 @@ const AddAddress = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8081/api/users/${userId}/addresses`,
+        `${api}/users/${userId}/addresses`,
         newAddress,
         {
           headers: {
@@ -115,6 +116,7 @@ const AddAddress = () => {
       setSelectedProvince("");
       setSelectedDistrict("");
       setSelectedWard("");
+      navigate("/checkout");
     } catch (error) {
       if (error.response && error.response.data) {
         const errorData = error.response.data.errors;

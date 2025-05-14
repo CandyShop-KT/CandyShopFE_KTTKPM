@@ -24,7 +24,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../layouts/AdminLayout";
 import "../assets/css/manageUser.css";
-
+import api from "../config/api";
 const { Search } = Input;
 
 const ManageUser = () => {
@@ -36,7 +36,6 @@ const ManageUser = () => {
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  const api = "http://localhost:8081/api/";
 
   useEffect(() => {
     const role = localStorage.getItem("role");

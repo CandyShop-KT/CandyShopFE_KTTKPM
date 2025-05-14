@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import "../assets/css/ProductDetail.css";
-
+import api from "../config/api";
 const ProductDetail = () => {
   const { productId } = useParams(); // Lấy productId từ URL
   const [product, setProduct] = useState(null);
@@ -13,7 +13,7 @@ const ProductDetail = () => {
     const fetchProductDetail = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8081/api/products/${productId}`
+          `${api}/products/${productId}`
         );
         setProduct(response.data.data); // Lưu thông tin sản phẩm vào state
         setLoading(false);
