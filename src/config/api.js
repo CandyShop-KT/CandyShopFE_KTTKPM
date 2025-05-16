@@ -1,3 +1,3 @@
 // src/config/api.js
-const api = "https://candyshopbe-kttkpm.onrender.com/api";
+const api = "https://candyshop-56598392698.asia-southeast1.run.app";
 export default api;
