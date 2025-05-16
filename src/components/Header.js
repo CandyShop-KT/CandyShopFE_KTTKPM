@@ -57,6 +57,9 @@ const Header = () => {
   }, []);
 
   const handleCategoryHover = async (categoryId) => {
+    // Nếu đã có subcategories cho category này thì không gọi lại API nữa
+    if (subCategories[categoryId]) return;
+  
     try {
       const response = await fetch(
         `${api}/categories/${categoryId}/subcategories`

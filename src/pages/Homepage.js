@@ -84,11 +84,12 @@ const Product = ({ setCartCount }) => {
   };
 
   useEffect(() => {
-    console.log(subCategoryId);
     if (subCategoryId) {
       fetchSubCategory();
     }
+  }, [subCategoryId]);
 
+  useEffect(() => {
     fetchProducts(currentPage);
   }, [currentPage, subCategoryId, keyword]);
 
