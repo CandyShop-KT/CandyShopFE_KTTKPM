@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../assets/css/EditUserProfile.css"; 
+import api from "../config/api";
 
 const EditUserProfile = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -23,7 +24,7 @@ const EditUserProfile = () => {
 
   const fetchUserData = async (token, userId) => {
     try {
-      const profileResponse = await fetch(`http://localhost:8081/api/users/${userId}`, {
+      const profileResponse = await fetch(`${api}/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!profileResponse.ok) throw new Error("Failed to fetch profile data");
@@ -63,7 +64,7 @@ const EditUserProfile = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8081/api/users/${userId}`, {
+      const response = await fetch(`${api}/users/${userId}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,

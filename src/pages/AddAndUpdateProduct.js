@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../assets/css/AddAndUpdateProduct.css";
 import AdminLayout from "../layouts/AdminLayout";
+import api from "../config/api";
 
 const AddAndUpdateProduct = () => {
   const { productId } = useParams(); // Lấy productId từ URL
@@ -87,25 +88,29 @@ const AddAndUpdateProduct = () => {
       setDescription(product.description);
       setDimension(product.dimension);
       setWeight(product.weight);
-      setSubCategory(product.subCategory);
-      setCategoryId(product.categoryId);
-      setSubCategoryId(product.subCategory.subCategoryId);
+
+      // Fetch subcategory details to get parent category
+      const subCategoryResponse = await axios.get(
+        `http://localhost:8081/api/subcategories/${product.subCategory.subCategoryId}`
+      );
+      const subCategoryData = subCategoryResponse.data.data;
+
+      // Set category first
+      setCategoryId(subCategoryData.category.categoryId);
+      // Then fetch subcategories for this category
+      await fetchSubCategories(subCategoryData.category.categoryId);
+      // Finally set the subcategory
+      setSubCategoryId(subCategoryData.subCategoryId);
+      setSubCategory(subCategoryData);
+
       setPublisherId(product.publisher.publisherId);
-      setCurrentPrice(product.currentPrice.newPrice); // Lưu giá hiện tại vào state
-      setPrice(product.currentPrice.newPrice); // Đặt giá mặc định là giá hiện tại
+      setCurrentPrice(product.currentPrice.newPrice);
+      setPrice(product.currentPrice.newPrice);
       setMainImage(product.mainImageUrl);
       setIsFetch(false);
     } catch (error) {
       console.error("Error fetching product details:", error);
     }
-  };
-
-  const handleCategoryChange = (e) => {
-    const selectedCategoryId = e.target.value;
-    setCategoryId(selectedCategoryId);
-    setSubCategoryId(""); // Reset ID phân loại phụ
-    fetchSubCategories(selectedCategoryId); // Lấy phân loại phụ cho danh mục đã chọn
-    setIsFetch(true);
   };
 
   const fetchSubCategories = async (categoryId) => {
@@ -117,6 +122,14 @@ const AddAndUpdateProduct = () => {
     } catch (error) {
       console.error("Error fetching subcategories:", error);
     }
+  };
+
+  const handleCategoryChange = (e) => {
+    const selectedCategoryId = e.target.value;
+    setCategoryId(selectedCategoryId);
+    setSubCategoryId(""); // Reset ID phân loại phụ
+    fetchSubCategories(selectedCategoryId); // Lấy phân loại phụ cho danh mục đã chọn
+    setIsFetch(true);
   };
 
   const updateProductPrice = async (newPrice) => {
@@ -181,16 +194,14 @@ const AddAndUpdateProduct = () => {
     formData.append("categoryId", categoryId);
     formData.append("subCategoryId", subCategoryId);
     formData.append("publisherId", publisherId);
-    formData.append("mainImage", mainImage);
     formData.append("price", price);
 
     try {
       if (isEditing) {
-        // Nếu đang ở chế độ chỉnh sửa, gọi hàm cập nhật giá trước
+        // First update the product details
         const priceUpdateSuccess = await updateProductPrice(price);
 
         if (priceUpdateSuccess) {
-          // Chỉ khi cập nhật giá thành công, mới gọi hàm cập nhật sản phẩm
           const response = await axios.patch(
             `http://localhost:8081/api/products/${productId}`,
             formData,
@@ -202,15 +213,35 @@ const AddAndUpdateProduct = () => {
             }
           );
 
+          // If there's a new image, update it separately
+          if (mainImage instanceof File) {
+            const imageFormData = new FormData();
+            imageFormData.append("file", mainImage);
+            await axios.patch(
+              `http://localhost:8081/api/products/${productId}/main-image`,
+              imageFormData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+          }
+
           if (response.status === 200) {
             alert("Cập nhật sản phẩm thành công!");
-            navigate(`/product`); // Điều hướng về trang sản phẩm
+            navigate("/admin/products");
           }
         } else {
           alert("Cập nhật giá không thành công, không thể cập nhật sản phẩm.");
         }
       } else {
-        // Nếu không, gọi hàm thêm sản phẩm
+        // For new products, include the image in the initial request
+        if (mainImage) {
+          formData.append("mainImage", mainImage);
+        }
+
         const response = await axios.post(
           "http://localhost:8081/api/products",
           formData,
@@ -223,11 +254,9 @@ const AddAndUpdateProduct = () => {
         );
 
         if (response.status === 201) {
-          alert(
-            `Thêm sản phẩm thành công! ID sản phẩm: ${response.data.data.productId}`
-          );
+          alert("Thêm sản phẩm thành công!");
           resetForm();
-          navigate(`/product`);
+          navigate("/admin/products");
         }
       }
     } catch (error) {
@@ -269,7 +298,7 @@ const AddAndUpdateProduct = () => {
 
         if (response.status === 200) {
           alert("Xóa sản phẩm thành công!");
-          navigate(`/product`); // Điều hướng về trang sản phẩm
+          navigate("/admin/products");
         }
       } catch (error) {
         if (error.response && error.response.data) {
@@ -294,8 +323,9 @@ const AddAndUpdateProduct = () => {
     setPublisherId("");
     setMainImage(null);
     setPrice("");
+    setPreviewUrl(null);
     setIsEditing(false);
-    navigate(`/product`); // Điều hướng về trang sản phẩm
+    navigate("/admin/products");
   };
 
   const handleImageChange = (e) => {
@@ -454,43 +484,41 @@ const AddAndUpdateProduct = () => {
                 </div>
 
                 {/* Card ảnh sản phẩm */}
-                {!isEditing && (
-                  <div className="col-12">
-                    <div className="card">
-                      <div className="card-header text-white">
-                        <h5 className="card-title mb-0">Ảnh sản phẩm</h5>
+                <div className="col-12">
+                  <div className="card">
+                    <div className="card-header text-white">
+                      <h5 className="card-title mb-0">Ảnh sản phẩm</h5>
+                    </div>
+                    <div className="card-body">
+                      <div className="mb-3">
+                        <label className="form-label">Chọn ảnh</label>
+                        <input
+                          type="file"
+                          className="form-control manage-order-image"
+                          onChange={handleImageChange}
+                          accept="image/*"
+                          required={!isEditing}
+                        />
                       </div>
-                      <div className="card-body">
-                        <div className="mb-3">
-                          <label className="form-label">Chọn ảnh</label>
-                          <input
-                            type="file"
-                            className="form-control manage-order-image"
-                            onChange={handleImageChange}
-                            accept="image/*"
-                            required
+                      {(previewUrl || mainImage) && (
+                        <div className="text-center">
+                          <img
+                            src={previewUrl || mainImage}
+                            alt="Preview"
+                            style={{
+                              maxWidth: "100%",
+                              height: "auto",
+                              objectFit: "contain",
+                              border: "1px solid #ddd",
+                              borderRadius: "8px",
+                              padding: "5px",
+                            }}
                           />
                         </div>
-                        {previewUrl && (
-                          <div className="text-center">
-                            <img
-                              src={previewUrl}
-                              alt="Preview"
-                              style={{
-                                maxWidth: "100%",
-                                height: "auto",
-                                objectFit: "contain",
-                                border: "1px solid #ddd",
-                                borderRadius: "8px",
-                                padding: "5px",
-                              }}
-                            />
-                          </div>
-                        )}
-                      </div>
+                      )}
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
 

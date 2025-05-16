@@ -10,7 +10,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
 import "./Home.css";
-
+import api from "../../config/api";
 const AdminHome = () => {
   const [statistics, setStatistics] = useState({
     totalOrders: 0,
@@ -223,9 +223,9 @@ const AdminHome = () => {
                 type="primary"
                 block
                 className="action-button manage-categories"
-                onClick={() => navigate("/category/manage")}
+                onClick={() => navigate("/product/manage")}
               >
-                Quản lý danh mục
+                Quản lý sản phẩm & danh mục
               </Button>
             </Col>
           </Row>

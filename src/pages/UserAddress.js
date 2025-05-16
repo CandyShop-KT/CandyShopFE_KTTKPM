@@ -25,7 +25,7 @@ import {
 import axios from "axios";
 import AdminLayout from "../layouts/AdminLayout";
 import "../assets/css/manageUser.css";
-
+import api from "../config/api";
 const { Option } = Select;
 
 const UserAddress = () => {
@@ -44,7 +44,7 @@ const UserAddress = () => {
   const [wards, setWards] = useState([]);
 
   const token = localStorage.getItem("token");
-  const api = "http://localhost:8081/api/";
+
 
   useEffect(() => {
     fetchUserDetails();

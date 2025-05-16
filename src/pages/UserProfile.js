@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'; 
 import "../assets/css/UserProfile.css";
+import api from "../config/api";
 
 const UserProfile = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -24,14 +25,14 @@ const UserProfile = () => {
 
   const fetchUserData = async (token, userId) => {
     try {
-      const profileResponse = await fetch(`http://localhost:8081/api/users/${userId}`, {
+      const profileResponse = await fetch(`${api}/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!profileResponse.ok) throw new Error("Failed to fetch profile data");
       const profileData = await profileResponse.json();
       setUserProfile(profileData.data);
 
-      const addressesResponse = await fetch(`http://localhost:8081/api/users/${userId}/addresses`, {
+      const addressesResponse = await fetch(`${api}/users/${userId}/addresses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!addressesResponse.ok) throw new Error("Failed to fetch addresses");
@@ -64,7 +65,7 @@ const UserProfile = () => {
     formData.append("file", avatarFile); 
 
     try {
-      const response = await fetch(`http://localhost:8081/api/users/${userId}/avatar`, {
+      const response = await fetch(`${api}/users/${userId}/avatar`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,

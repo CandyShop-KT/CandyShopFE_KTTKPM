@@ -5,12 +5,14 @@ import {
   addToCart,
   removeFromCart,
   toggleSelectProduct,
+  updateQuantity,
+  syncCart,
 } from "../redux/slices/cartSlice";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import api from "../config/api";
 const SignIn = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -36,7 +38,7 @@ const SignIn = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:8081/api/auth/login",
+        `${api}/auth/login`,
         {
           username,
           password,
@@ -56,15 +58,9 @@ const SignIn = () => {
         localStorage.setItem("role", role);
         localStorage.setItem("userId", userId);
         localStorage.setItem("userName", userName);
-        // Kiểm tra và chuyển giỏ hàng tạm thời (nếu có) vào giỏ hàng của người dùng
-        const tempCartItems = JSON.parse(localStorage.getItem("cart")) || [];
-        if (tempCartItems.length > 0) {
-          tempCartItems.forEach((item) => {
-            dispatch(addToCart(item)); // Thêm sản phẩm vào giỏ hàng Redux
-          });
-          // Xóa giỏ hàng tạm thời sau khi chuyển vào giỏ hàng người dùng
-          localStorage.removeItem("cart");
-        }
+
+        // Đồng bộ giỏ hàng sau khi đăng nhập
+        dispatch(syncCart());
 
         if (role === "ADMIN") {
           toast.success("Đăng nhập thành công với quyền admin!", {
