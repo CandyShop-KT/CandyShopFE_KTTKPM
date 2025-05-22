@@ -84,7 +84,7 @@ const handleAvatarUpload = async (e) => {
   formData.append("file", avatarFile);
 
   try {
-    const response = await fetch(`http://localhost:8081/api/users/${userId}/avatar`, {
+    const response = await fetch(`${api}/users/${userId}/avatar`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,
