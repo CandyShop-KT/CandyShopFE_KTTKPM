@@ -97,7 +97,6 @@ const Footer = () => {
           <div style={columnStyle}>
             <h5 style={titleStyle}>NHÓM</h5>
             <p>Các thành viên trong nhóm:</p>
-            <p>Ngô Thiên Phú</p>
             <p>Nguyên Ngọc Tường Vân</p>
             <p>Nguyễn Thị Thu Hồng</p>
             <p>Hồ Thị Thu Trầm</p>

@@ -61,7 +61,7 @@ function App() {
     <Router>
       <AppLayout>
         <Routes>
-          <Route path="/" element={<Homepage />} />
+          <Route path="/" element={<Product />} />
           <Route path="/addaddress" element={<AddAddress />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
