@@ -6,19 +6,30 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/slices/cartSlice";
 import { useParams } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
+
 
 const Product = ({ setCartCount }) => {
   const dispatch = useDispatch();
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const limit = 12; // Số lượng sản phẩm tối đa trên mỗi trang
-  const { subCategoryId } = useParams();
-  const { keyword } = useParams();
+  const limit = 15; // Số lượng sản phẩm tối đa trên mỗi trang
+  const params = useParams();
+  const subCategoryId = params.subCategoryId;
+  const keyword = params.keyword;
   const [subCategory, setSubCategory] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const [notification, setNotification] = useState(null);
+  const [priceRange, setPriceRange] = useState([0, 1000000]); 
+  const [isFilteringByPrice, setIsFilteringByPrice] = useState(false);
+  const [sortField, setSortField] = useState("productName");
+  const [sortOrder, setSortOrder] = useState("asc");
+
+
+
 
   const images = [
     require("../assets/images/banner1.jpg"),
@@ -47,54 +58,151 @@ const Product = ({ setCartCount }) => {
       console.error("Error fetching subcategory:", error);
     }
   };
-  const fetchProducts = async (page) => {
-    console.log("Keyword:", keyword);
-    try {
-      let response;
-      if (subCategoryId) {
-        response = await axios.get(
-          `http://localhost:8081/api/products/subcategory/${subCategoryId}?page=${page}&limit=${limit}`
-        );
-      } else if (keyword) {
-        response = await axios.get(
-          `http://localhost:8081/api/products/searchByName?name=${keyword}&page=${page}&limit=${limit}`
-        );
-      } else {
-        response = await axios.get(
-          `http://localhost:8081/api/products?limit=${limit}&page=${page}`
-        );
+
+  
+  const fetchProductsByPriceRange = async (page) => {
+  try {
+    const [minPrice, maxPrice] = priceRange;
+
+    const response = await axios.get(
+      `http://localhost:8081/api/products/searchByPrice`,
+      {
+        params: {
+          minPrice,
+          maxPrice,
+          page,
+          limit,
+          sortField: "productName",
+          sortOrder: "asc",
+        },
       }
-      const data = response.data.data;
-      setProducts(data.content);
-      setTotalPages(data.totalPages);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      console.error(
-        "Error updating product price:",
-        error.response ? error.response.data : error
+    );
+
+    const data = response.data.data;
+    setProducts(data.content);
+    setTotalPages(data.totalPages);
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching products by price range:", error);
+    setLoading(false);
+  }
+};
+
+  // const fetchProducts = async (page) => {
+  //   console.log("Keyword:", keyword);
+  //   try {
+  //     let response;
+  //     if (subCategoryId) {
+  //       response = await axios.get(
+  //         `http://localhost:8081/api/products/subcategory/${subCategoryId}?page=${page}&limit=${limit}`
+  //       );
+  //     } else if (keyword) {
+  //       response = await axios.get(
+  //         `http://localhost:8081/api/products/searchByName?name=${keyword}&page=${page}&limit=${limit}`
+  //       );
+  //     } else {
+  //       response = await axios.get(
+  //         `http://localhost:8081/api/products?limit=${limit}&page=${page}`
+  //       );
+  //     }
+  //     const data = response.data.data;
+  //     setProducts(data.content);
+  //     setTotalPages(data.totalPages);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error("Error fetching products:", error);
+  //     console.error(
+  //       "Error updating product price:",
+  //       error.response ? error.response.data : error
+  //     );
+  //     setLoading(false);
+  //   }
+  // };
+const fetchProducts = async (page) => {
+  try {
+    let response;
+    const params = {
+      page,
+      limit,
+      sortBy: `${sortField}_${sortOrder}`,
+    };
+
+    if (subCategoryId) {
+      response = await axios.get(
+        `http://localhost:8081/api/products/subcategory/${subCategoryId}`,
+        { params }
       );
-      setLoading(false);
+    } else if (keyword) {
+      response = await axios.get(
+        `http://localhost:8081/api/products/searchByName`,
+        {
+          params: {
+            name: keyword,
+            ...params,
+          },
+        }
+      );
+    } else {
+      response = await axios.get(`http://localhost:8081/api/products`, {
+        params,
+      });
     }
-  };
+
+    const data = response.data.data;
+    setProducts(data.content);
+    setTotalPages(data.totalPages);
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    setLoading(false);
+  }
+};
+useEffect(() => {
+  if (!isFilteringByPrice) {
+    fetchProducts(currentPage);
+  }
+}, [sortField, sortOrder, currentPage]); // THÊM currentPage
+
+
+
   const navigate = useNavigate();
   const handleViewDetail = (productId) => {
     // Chuyển hướng đến trang chi tiết sản phẩm với productId
     navigate(`/productDetail/${productId}`);
   };
 
-  useEffect(() => {
-    console.log(subCategoryId);
-    if (subCategoryId) {
-      fetchSubCategory();
+useEffect(() => {
+  const fetchAll = async () => {
+    try {
+      setLoading(true); // hiển thị loading
+
+      // Reset lọc giá khi chuyển danh mục hoặc tìm kiếm
+      if (subCategoryId || keyword) {
+        setIsFilteringByPrice(false);
+      }
+
+      if (subCategoryId) {
+        await fetchSubCategory(); // cần đợi lấy subCategory trước
+        await fetchProducts(currentPage); // sau khi có subCategory mới fetch sản phẩm
+      } else if (keyword) {
+        await fetchProducts(currentPage);
+      } else if (isFilteringByPrice) {
+        await fetchProductsByPriceRange(currentPage);
+      } else {
+        await fetchProducts(currentPage);
+      }
+    } catch (err) {
+      console.error("Lỗi khi fetch:", err);
     }
+  };
 
-    fetchProducts(currentPage);
-  }, [currentPage, subCategoryId, keyword]);
-
+  fetchAll();
+}, [currentPage, subCategoryId, keyword, isFilteringByPrice]);
+ 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+
 
   const handleAddToCart = (product) => {
     if (!product.productId || !product.productName || !product.currentPrice) {
@@ -161,6 +269,66 @@ const Product = ({ setCartCount }) => {
 
       <div className="product mt-4">
         <h3>{subCategory.subCategoryName}</h3>
+      
+  {!subCategoryId && !keyword && (
+  <div className="container mb-4">
+    <div className="price-slider-inline d-flex align-items-center flex-wrap">
+      <h6 className="me-3 mb-0">Lọc giá:</h6>
+      <div className="flex-grow-1 me-3" style={{ padding: '0 10px' }}>
+  <Slider
+    range
+    min={0}
+    max={1000000}
+    step={1000}
+    defaultValue={priceRange}
+    onChange={(value) => setPriceRange(value)}
+    allowCross={false}
+  />
+  <div className="d-flex justify-content-between small text-muted mt-1">
+    <span>{priceRange[0].toLocaleString()} VND</span>
+    <span>{priceRange[1].toLocaleString()} VND</span>
+  </div>
+</div>
+
+      <button
+        onClick={() => {
+    setIsFilteringByPrice(true);
+    setCurrentPage(0);
+    fetchProductsByPriceRange(0);
+  }}
+         className="btn btn-apply mt-3"
+        style={{ whiteSpace: "nowrap" }}
+      >
+        Áp dụng
+      </button>
+    </div>
+  </div>
+)}
+
+{/* Sắp xếp chỉ hiển thị khi không phải trang chủ */}
+{subCategoryId || keyword ? (
+  
+  <div className="sort-dropdown" style={{ marginLeft: '1200px' }}>
+  <img src="../assets/images/filter.png" alt="Filter" />
+    <select
+      value={`${sortField}_${sortOrder}`}
+      onChange={(e) => {
+        const [field, order] = e.target.value.split("_");
+        setSortField(field);
+        setSortOrder(order);
+        setCurrentPage(0); // reset page về đầu
+      }}
+      className="form-select d-inline w-auto"
+    >
+      <option value="createdAt_desc">Hàng mới</option>
+      <option value="price_asc">Giá thấp đến cao</option>
+      <option value="price_desc">Giá cao đến thấp</option>
+      <option value="productName_asc">Tên A-Z</option>
+      <option value="productName_desc">Tên Z-A</option>
+    </select>
+  </div>
+) : null}
+
         <div className="row">
           {products.length > 0 ? (
             products.map((product) => (

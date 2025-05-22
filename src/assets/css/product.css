@@ -232,3 +232,67 @@ h3 {
   font-size: 16px;
   text-align: center;
 }
+
+/* thanh Slider */
+/* Nền thanh (rail) */
+.rc-slider-rail {
+  background-color: #ddd;
+  height: 10px; /* to hơn mặc định */
+  border-radius: 5px;
+}
+
+/* Thanh chọn (track) */
+.rc-slider-track {
+  background: linear-gradient(90deg, #1834c4, #0056b3);
+  height: 10px; /* match với rail */
+  border-radius: 5px;
+}
+
+/* Tay cầm (handle) */
+.rc-slider-handle {
+  width: 150px ;  /* to hơn */
+  height: 150x;
+  border: 3px solid #1834c4;
+  background-color: white;
+  margin-top: -7px; /* căn giữa handle với track */
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(24, 52, 196, 0.2);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.rc-slider-handle:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 5px rgba(24, 52, 196, 0.2);
+}
+
+.rc-slider-handle:focus {
+  outline: none;
+  box-shadow: 0 0 0 5px rgba(24, 52, 196, 0.25);
+}
+
+.price-slider-inline span {
+  font-weight: 600;
+  font-size: 16px;
+  color: #222;
+}
+
+
+
+
+/* Nút áp dụng */
+.btn-apply {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  font-weight: 500;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.btn-apply:hover {
+  background-color: #0056b3;
+}
+
+
