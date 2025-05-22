@@ -67,7 +67,7 @@ const Product = ({ setCartCount }) => {
     const [minPrice, maxPrice] = priceRange;
 
     const response = await axios.get(
-      `http://localhost:8081/api/products/searchByPrice`,
+      `http://localhost:8080/api/products/searchByPrice`,
       {
         params: {
           minPrice,
@@ -97,15 +97,15 @@ const Product = ({ setCartCount }) => {
   //     let response;
   //     if (subCategoryId) {
   //       response = await axios.get(
-  //         `http://localhost:8081/api/products/subcategory/${subCategoryId}?page=${page}&limit=${limit}`
+  //         `http://localhost:8080/api/products/subcategory/${subCategoryId}?page=${page}&limit=${limit}`
   //       );
   //     } else if (keyword) {
   //       response = await axios.get(
-  //         `http://localhost:8081/api/products/searchByName?name=${keyword}&page=${page}&limit=${limit}`
+  //         `http://localhost:8080/api/products/searchByName?name=${keyword}&page=${page}&limit=${limit}`
   //       );
   //     } else {
   //       response = await axios.get(
-  //         `http://localhost:8081/api/products?limit=${limit}&page=${page}`
+  //         `http://localhost:8080/api/products?limit=${limit}&page=${page}`
   //       );
   //     }
   //     const data = response.data.data;
@@ -132,12 +132,12 @@ const fetchProducts = async (page) => {
 
     if (subCategoryId) {
       response = await axios.get(
-        `http://localhost:8081/api/products/subcategory/${subCategoryId}`,
+        `${api}/products/subcategory/${subCategoryId}`,
         { params }
       );
     } else if (keyword) {
       response = await axios.get(
-        `http://localhost:8081/api/products/searchByName`,
+        `${api}/products/searchByName`,
         {
           params: {
             name: keyword,
@@ -146,7 +146,7 @@ const fetchProducts = async (page) => {
         }
       );
     } else {
-      response = await axios.get(`http://localhost:8081/api/products`, {
+      response = await axios.get(`${api}/products`, {
         params,
       });
     }
