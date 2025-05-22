@@ -9,6 +9,12 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const fileInputRef = React.useRef(null); 
+  const [uploading, setUploading] = useState(false); // thêm dòng này
+
+
+
 
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
@@ -45,47 +51,110 @@ const UserProfile = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+  return () => {
+    if (avatarPreview) {
+      URL.revokeObjectURL(avatarPreview);
+    }
+  };
+}, [avatarPreview]);
+
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setAvatarFile(file);
+       const previewUrl = URL.createObjectURL(file);
+        setAvatarPreview(previewUrl);
     }
   };
 
-  const handleAvatarUpload = async (e) => {
-    e.preventDefault();
-    
-    if (!avatarFile) {
-      alert("Vui lòng chọn 1 hình ảnh để upload.");
+const handleAvatarUpload = async (e) => {
+  e.preventDefault();
+
+  if (!avatarFile) {
+    alert("Vui lòng chọn 1 hình ảnh để upload.");
+    return;
+  }
+
+  setUploading(true);
+  setError(null);
+
+  const formData = new FormData();
+  formData.append("file", avatarFile);
+
+  try {
+    const response = await fetch(`http://localhost:8081/api/users/${userId}/avatar`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      let errorMessage = "Tải ảnh lên thất bại.";
+      try {
+        const errorData = await response.json();
+        if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+      } catch (parseError) {
+        console.warn("Không thể parse JSON lỗi từ server:", parseError);
+      }
+      console.error("Upload avatar thất bại:", errorMessage);
+      setError(errorMessage);
+      alert(errorMessage);
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", avatarFile); 
+    const updatedProfile = await response.json();
+    setUserProfile(updatedProfile.data);
+    alert("Ảnh đại diện đã được cập nhật thành công!");
+    setAvatarFile(null);
+    setAvatarPreview(null);
+  } catch (err) {
+    console.error("Lỗi mạng hoặc server không phản hồi:", err);
+    alert("Tải ảnh lên thất bại. Vui lòng kiểm tra kết nối hoặc thử lại sau!");
+    setError(err.message || "Lỗi không xác định");
+  } finally {
+    setUploading(false);
+  }
+};
 
+
+
+
+const handleDeleteAvatar = async () => {
+  const isConfirmed = window.confirm("Bạn có chắc chắn muốn xóa ảnh đại diện?");
+
+  if (isConfirmed) {
     try {
+
       const response = await fetch(`${api}/users/${userId}/avatar`, {
         method: 'PATCH',
+
         headers: {
           'Authorization': `Bearer ${token}`,
         },
-        body: formData,
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        setError(errorData.message || "Failed to upload avatar");
-        return;
+        throw new Error(errorData.message || "Lỗi khi xóa ảnh đại diện");
       }
 
-      const updatedProfile = await response.json();
-      setUserProfile(updatedProfile.data);
-      alert("Avatar uploaded successfully!");
-    } catch (error) {
-      setError(error.message);
+      const result = await response.json();
+      setUserProfile(result.data); // cập nhật lại avatarUrl
+      alert("Xóa ảnh đại diện thành công!");
+    } catch (err) {
+      alert(err.message || "Lỗi không xác định khi xóa ảnh đại diện");
     }
-  };
+  } else {
+    alert("Hành động xóa ảnh đại diện đã bị hủy!");
+  }
+};
+
 
   if (loading) {
     return <div className="loading">Loading...</div>;
@@ -121,11 +190,25 @@ const UserProfile = () => {
             <h2 className="profile-title">THÔNG TIN CÁ NHÂN</h2>
             <div className="profile-info">
               <div>
+              <div 
+                    className="avatar-wrapper" 
+                    onClick={() => fileInputRef.current.click()} 
+                    title="Click để chọn ảnh mới"
+                  >
                 <img 
-                  src={userProfile.avatarUrl || "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/768px-User-avatar.svg.png"} 
+                  src={avatarPreview || userProfile.avatarUrl || "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/768px-User-avatar.svg.png"} 
                   alt="User Avatar" 
                   className="avatar-image" 
                 />
+            </div>
+             <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleAvatarChange}
+            style={{ display: 'none' }}
+          />
+
                 <div style={{marginTop: 10, marginLeft:20}}>
                   <input 
                     type="file" 
@@ -133,14 +216,37 @@ const UserProfile = () => {
                     accept="image/*" 
                     onChange={handleAvatarChange} 
                     className="avatar-upload-input"
+                    style={{display:'none'}}
                   />
                   <div>
                     <button 
                       className="upload-avatar-button" 
                       onClick={handleAvatarUpload}
                     >
-                      Upload Avatar
+                       {uploading ? "Đang tải ảnh..." : "Cập nhật ảnh đại diện"}
                     </button>
+                     {avatarPreview && (
+      <button 
+      className="upload-avatar-button"
+        onClick={() => {
+          setAvatarFile(null);
+          setAvatarPreview(null);
+        }}
+        style={{ marginLeft: '10px', backgroundColor: 'red', cursor: 'pointer' }}
+      >
+        Hủy chọn ảnh
+      </button>
+    )}
+    {userProfile.avatarUrl && !avatarPreview && (
+  <button
+    className="upload-avatar-button"
+    onClick={handleDeleteAvatar}
+    style={{ marginLeft: '10px', backgroundColor: 'red', cursor: 'pointer' }}
+  >
+    Xóa ảnh đại diện
+  </button>
+)}
+
                   </div>
                 </div>
               </div>

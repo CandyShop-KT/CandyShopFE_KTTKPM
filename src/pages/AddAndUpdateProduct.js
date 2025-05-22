@@ -6,8 +6,8 @@ import AdminLayout from "../layouts/AdminLayout";
 import api from "../config/api";
 
 const AddAndUpdateProduct = () => {
-  const { productId } = useParams(); // Lấy productId từ URL
-  const navigate = useNavigate(); // Khởi tạo useNavigate
+  const { productId } = useParams();
+  const navigate = useNavigate();
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
   const [dimension, setDimension] = useState("");
@@ -23,28 +23,27 @@ const AddAndUpdateProduct = () => {
   const [categories, setCategories] = useState([]);
   const [publishers, setPublishers] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
-  const token = localStorage.getItem("token"); // Thay thế bằng token thực tế của bạn
+  const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
-  const [currentPrice, setCurrentPrice] = useState(""); // Giá hiện tại
+  const [currentPrice, setCurrentPrice] = useState("");
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (role !== "ADMIN") {
       alert("Bạn không có quyền truy cập trang này.");
-      navigate("/"); // Điều hướng về trang chính hoặc trang khác
+      navigate("/");
     } else {
       fetchCategories();
       fetchPublishers();
-
       if (productId) {
-        fetchProductDetails(productId); // Gọi hàm lấy thông tin sản phẩm nếu có productId
-        setIsEditing(true); // Đặt trạng thái chỉnh sửa
+        fetchProductDetails(productId);
+        setIsEditing(true);
       }
     }
   }, [role, productId]);
 
   useEffect(() => {
-    // Cleanup function for preview URL
     return () => {
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
@@ -52,7 +51,6 @@ const AddAndUpdateProduct = () => {
     };
   }, [previewUrl]);
 
-  // Hàm lấy danh sách danh mục
   const fetchCategories = async () => {
     try {
       const response = await axios.get("http://localhost:8081/api/categories");
@@ -63,7 +61,6 @@ const AddAndUpdateProduct = () => {
     }
   };
 
-  // Hàm lấy danh sách nhà xuất bản
   const fetchPublishers = async () => {
     try {
       const response = await axios.get("http://localhost:8081/api/publishers", {
@@ -77,29 +74,21 @@ const AddAndUpdateProduct = () => {
     }
   };
 
-  // Hàm lấy thông tin sản phẩm
   const fetchProductDetails = async (id) => {
     try {
-      const response = await axios.get(
-        `http://localhost:8081/api/products/${id}`
-      );
+      const response = await axios.get(`http://localhost:8081/api/products/${id}`);
       const product = response.data.data;
       setProductName(product.productName);
       setDescription(product.description);
       setDimension(product.dimension);
       setWeight(product.weight);
 
-      // Fetch subcategory details to get parent category
       const subCategoryResponse = await axios.get(
         `http://localhost:8081/api/subcategories/${product.subCategory.subCategoryId}`
       );
       const subCategoryData = subCategoryResponse.data.data;
-
-      // Set category first
       setCategoryId(subCategoryData.category.categoryId);
-      // Then fetch subcategories for this category
       await fetchSubCategories(subCategoryData.category.categoryId);
-      // Finally set the subcategory
       setSubCategoryId(subCategoryData.subCategoryId);
       setSubCategory(subCategoryData);
 
@@ -127,31 +116,17 @@ const AddAndUpdateProduct = () => {
   const handleCategoryChange = (e) => {
     const selectedCategoryId = e.target.value;
     setCategoryId(selectedCategoryId);
-    setSubCategoryId(""); // Reset ID phân loại phụ
-    fetchSubCategories(selectedCategoryId); // Lấy phân loại phụ cho danh mục đã chọn
+    setSubCategoryId("");
+    fetchSubCategories(selectedCategoryId);
     setIsFetch(true);
   };
 
   const updateProductPrice = async (newPrice) => {
-    // if (parseFloat(currentPrice) !== parseFloat(newPrice)) {
     if (parseFloat(currentPrice) !== parseFloat(newPrice)) {
       const priceChangeReason = "Admin thay đổi giá sản phẩm";
       const now = new Date();
-      const options = { timeZone: "Asia/Ho_Chi_Minh", hour12: false };
-      const localDate = new Date(
-        now.toLocaleString("sv-SE", options).replace(" ", "T")
-      ); // Định dạng ISO 8601
-
-      localDate.setSeconds(localDate.getSeconds() + 1);
-
-      const year = localDate.getFullYear();
-      const month = String(localDate.getMonth() + 1).padStart(2, "0");
-      const day = String(localDate.getDate()).padStart(2, "0");
-      const hours = String(localDate.getHours()).padStart(2, "0");
-      const minutes = String(localDate.getMinutes()).padStart(2, "0");
-      const seconds = String(localDate.getSeconds()).padStart(2, "0");
-
-      const priceChangeEffectiveDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+      now.setSeconds(now.getSeconds() + 1);
+      const priceChangeEffectiveDate = now.toISOString().split(".")[0];
 
       try {
         const response = await axios.post(
@@ -167,25 +142,22 @@ const AddAndUpdateProduct = () => {
             },
           }
         );
-
         if (response.status === 200) {
-          alert("Đã cập nhật giá sản phẩm");
-          return true; // Trả về true nếu cập nhật giá thành công
+          alert("Đã cập nhật giá sản phẩm.");
+          return true;
         }
       } catch (error) {
-        console.error(
-          "Error updating product price:",
-          error.response ? error.response.data : error
-        );
-        alert("Đã xảy ra lỗi khi cập nhật giá sản phẩm.");
-        return false; // Trả về false nếu có lỗi
+        console.error("Error updating price:", error.response?.data || error);
+        alert("Lỗi khi cập nhật giá.");
+        return false;
       }
     }
-    return true; // Nếu giá không thay đổi, coi như thành công
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const formData = new FormData();
     formData.append("productName", productName);
     formData.append("description", description);
@@ -198,13 +170,26 @@ const AddAndUpdateProduct = () => {
 
     try {
       if (isEditing) {
-        // First update the product details
-        const priceUpdateSuccess = await updateProductPrice(price);
+        const priceUpdated = await updateProductPrice(price);
+        if (!priceUpdated) return;
 
-        if (priceUpdateSuccess) {
-          const response = await axios.patch(
-            `http://localhost:8081/api/products/${productId}`,
-            formData,
+        const response = await axios.patch(
+          `http://localhost:8081/api/products/${productId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (mainImage instanceof File) {
+          const imageFormData = new FormData();
+          imageFormData.append("file", mainImage);
+          await axios.patch(
+            `http://localhost:8081/api/products/${productId}/main-image`,
+            imageFormData,
             {
               headers: {
                 "Content-Type": "multipart/form-data",
@@ -212,32 +197,13 @@ const AddAndUpdateProduct = () => {
               },
             }
           );
+        }
 
-          // If there's a new image, update it separately
-          if (mainImage instanceof File) {
-            const imageFormData = new FormData();
-            imageFormData.append("file", mainImage);
-            await axios.patch(
-              `http://localhost:8081/api/products/${productId}/main-image`,
-              imageFormData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
-          }
-
-          if (response.status === 200) {
-            alert("Cập nhật sản phẩm thành công!");
-            navigate("/admin/products");
-          }
-        } else {
-          alert("Cập nhật giá không thành công, không thể cập nhật sản phẩm.");
+        if (response.status === 200) {
+          alert("Cập nhật sản phẩm thành công!");
+          navigate("/admin/products");
         }
       } else {
-        // For new products, include the image in the initial request
         if (mainImage) {
           formData.append("mainImage", mainImage);
         }
@@ -256,31 +222,22 @@ const AddAndUpdateProduct = () => {
         if (response.status === 201) {
           alert("Thêm sản phẩm thành công!");
           resetForm();
-          navigate("/admin/products");
         }
       }
     } catch (error) {
-      // Xử lý lỗi như trước
-      if (error.response && error.response.data) {
-        // Kiểm tra xem có phản hồi lỗi từ API không
-        const errorMessage = error.response.data.message;
-        const errorData = error.response.data.data;
-
-        console.log(errorMessage);
-        console.log(errorData);
-        // Tạo một thông báo lỗi chi tiết
-        let detailedErrorMessage = `${errorMessage}\n`;
-
-        // Thêm từng lỗi cụ thể vào thông báo
-        for (const [key, value] of Object.entries(errorData)) {
-          detailedErrorMessage += `${key}: ${value}\n`;
+      const errRes = error.response?.data;
+      if (errRes) {
+        let msg = `${errRes.message}\n`;
+        for (const [key, value] of Object.entries(errRes.data || {})) {
+          msg += `${key}: ${value}\n`;
         }
-
-        alert(detailedErrorMessage); // Hiển thị thông báo lỗi
+        alert(msg);
       } else {
-        console.error("Error saving product:", error);
-        alert("Đã xảy ra lỗi khi lưu sản phẩm.");
+        alert("Lỗi không xác định khi lưu sản phẩm.");
+        console.error("Error:", error);
       }
+    }finally{
+      setIsSubmitting(false);
     }
   };
 
@@ -295,20 +252,16 @@ const AddAndUpdateProduct = () => {
             },
           }
         );
-
         if (response.status === 200) {
           alert("Xóa sản phẩm thành công!");
           navigate("/admin/products");
         }
       } catch (error) {
-        if (error.response && error.response.data) {
-          // Kiểm tra xem có phản hồi lỗi từ API không
-          const errorMessage = error.response.data.message;
-          alert(errorMessage); // Hiển thị thông báo lỗi
-        } else {
-          console.error("Error deleting product:", error);
-          alert("Đã xảy ra lỗi khi xóa sản phẩm.");
-        }
+        alert(
+          error.response?.data?.message ||
+            "Lỗi không xác định khi xóa sản phẩm."
+        );
+        console.error("Delete error:", error);
       }
     }
   };
@@ -332,7 +285,6 @@ const AddAndUpdateProduct = () => {
     const file = e.target.files[0];
     if (file) {
       setMainImage(file);
-      // Create preview URL
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
     }
@@ -529,8 +481,20 @@ const AddAndUpdateProduct = () => {
                   <button
                     type="submit"
                     className="btn btn-success manage-order-submit px-4"
+                    disabled={isSubmitting}
                   >
-                    {isEditing ? "Cập nhật" : "Thêm sản phẩm"}
+                    {isSubmitting ? (
+                      <>
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                        Đang xử lý...
+                      </>
+                    ) : (
+                      isEditing ? "Cập nhật" : "Thêm sản phẩm"
+                    )}
                   </button>
                   {isEditing && (
                     <>
