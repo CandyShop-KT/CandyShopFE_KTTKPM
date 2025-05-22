@@ -111,18 +111,10 @@ const Footer = () => {
               style={inputStyle}
             />
             <div style={{ display: "flex", justifyContent: "space-around" }}>
-              <a href="#" style={socialIconStyle}>
-                📱
-              </a>
-              <a href="#" style={socialIconStyle}>
-                🐦
-              </a>
-              <a href="#" style={socialIconStyle}>
-                📸
-              </a>
-              <a href="#" style={socialIconStyle}>
-                🔴
-              </a>
+              <button style={socialIconStyle} aria-label="Zalo">📱</button>
+              <button style={socialIconStyle} aria-label="Twitter">🐦</button>
+              <button style={socialIconStyle} aria-label="Instagram">📸</button>
+              <button style={socialIconStyle} aria-label="YouTube">🔴</button>
             </div>
           </div>
         </div>

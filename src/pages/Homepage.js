@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/slices/cartSlice";
 import { useParams } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-
+import api from "../config/api";
 const Product = ({ setCartCount }) => {
   const dispatch = useDispatch();
   const [products, setProducts] = useState([]);
@@ -36,7 +36,7 @@ const Product = ({ setCartCount }) => {
   const fetchSubCategory = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8081/api/subcategories/${subCategoryId}`
+        `${api}/subcategories/${subCategoryId}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch subcategory");
@@ -53,15 +53,15 @@ const Product = ({ setCartCount }) => {
       let response;
       if (subCategoryId) {
         response = await axios.get(
-          `http://localhost:8081/api/products/subcategory/${subCategoryId}?page=${page}&limit=${limit}`
+          `${api}/products/subcategory/${subCategoryId}?page=${page}&limit=${limit}`
         );
       } else if (keyword) {
         response = await axios.get(
-          `http://localhost:8081/api/products/searchByName?name=${keyword}&page=${page}&limit=${limit}`
+          `${api}/products/searchByName?name=${keyword}&page=${page}&limit=${limit}`
         );
       } else {
         response = await axios.get(
-          `http://localhost:8081/api/products?limit=${limit}&page=${page}`
+          `${api}/products?limit=${limit}&page=${page}`
         );
       }
       const data = response.data.data;
@@ -84,11 +84,12 @@ const Product = ({ setCartCount }) => {
   };
 
   useEffect(() => {
-    console.log(subCategoryId);
     if (subCategoryId) {
       fetchSubCategory();
     }
+  }, [subCategoryId]);
 
+  useEffect(() => {
     fetchProducts(currentPage);
   }, [currentPage, subCategoryId, keyword]);
 

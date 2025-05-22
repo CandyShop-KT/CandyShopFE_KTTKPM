@@ -6,9 +6,10 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/slices/cartSlice";
 import { useParams } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-
+import api from "../config/api";
 
 const Product = ({ setCartCount }) => {
   const dispatch = useDispatch();
@@ -47,7 +48,7 @@ const Product = ({ setCartCount }) => {
   const fetchSubCategory = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8081/api/subcategories/${subCategoryId}`
+        `${api}/subcategories/${subCategoryId}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch subcategory");
@@ -58,6 +59,7 @@ const Product = ({ setCartCount }) => {
       console.error("Error fetching subcategory:", error);
     }
   };
+
 
   
   const fetchProductsByPriceRange = async (page) => {
@@ -75,6 +77,7 @@ const Product = ({ setCartCount }) => {
           sortField: "productName",
           sortOrder: "asc",
         },
+
       }
     );
 

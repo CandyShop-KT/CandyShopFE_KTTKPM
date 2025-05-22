@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "../assets/css/orderHistory.css"; 
-
+import api from "../config/api";
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ const OrderHistory = () => {
   // Fetch đơn hàng theo userId
   const fetchOrders = async (userId, token, page) => {
     try {
-      const response = await fetch(`http://localhost:8081/api/orders/user/${userId}?page=${page}&limit=5&sortField=createdAt&sortOrder=desc`, {
+      const response = await fetch(`${api}/orders/user/${userId}?page=${page}&limit=5&sortField=createdAt&sortOrder=desc`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -49,7 +49,7 @@ const OrderHistory = () => {
   // Fetch đơn hàng theo trạng thái
   const fetchOrdersByStatus = async (userId, token, page, status) => {
     try {
-      const response = await fetch(`http://localhost:8081/api/orders/${userId}/status?status=${status}&page=${page}&size=5`, {
+      const response = await fetch(`${api}/orders/${userId}/status?status=${status}&page=${page}&size=5`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {

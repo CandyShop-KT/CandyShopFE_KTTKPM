@@ -2,7 +2,7 @@ import "../assets/css/checkout.css";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AddAddress from "./addAddress";
-
+import api from "../config/api";
 const ShippingAddress = () => {
   const navigate = useNavigate();
   const [addresses, setAddresses] = useState([]); // Danh sách địa chỉ
@@ -31,7 +31,7 @@ const ShippingAddress = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:8081/api/users/${userId}/addresses`,
+          `${api}/users/${userId}/addresses`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

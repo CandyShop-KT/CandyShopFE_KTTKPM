@@ -30,7 +30,7 @@ import axios from "axios";
 import moment from "moment";
 import AdminLayout from "../layouts/AdminLayout";
 import "../assets/css/userDetail.css"; // Updated CSS file
-
+import api from "../config/api";
 const { Option } = Select;
 
 const UserDetail = () => {
@@ -46,7 +46,7 @@ const UserDetail = () => {
   const [emailForm] = Form.useForm();
 
   const token = localStorage.getItem("token");
-  const api = "http://localhost:8081/api/";
+
 
   useEffect(() => {
     fetchUserDetails();

@@ -22,9 +22,18 @@ const App = () => {
   const [orderSuccess, setOrderSuccess] = useState(null);
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
-  const { checkoutData } = useSelector((state) => state.checkout);
-  const [selectedAddress, setSelectedAddress] = useState(null);
   const dispatch = useDispatch();
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [cardNumber, setCardNumber] = useState("");
+  const [showQRCode, setShowQRCode] = useState(false);
+
+  // Gọi useSelector ở trên, sau đó xử lý logic chọn checkoutData
+  const reduxCheckoutData = useSelector((state) => state.checkout.checkoutData);
+  const checkoutNowProduct = sessionStorage.getItem("checkoutNowProduct");
+  const checkoutData = checkoutNowProduct
+    ? [JSON.parse(checkoutNowProduct)]
+    : reduxCheckoutData;
+
   useEffect(() => {
     if (!token) {
       // alert("Bạn cần đăng nhập để thực hiện tính năng này."); // Hiển thị thông báo
@@ -146,6 +155,7 @@ const App = () => {
         districtId: selectedAddress.district.districtId,
         wardId: selectedAddress.ward.wardId,
         userId: userId,
+        paymentMethod: paymentMethod,
         orderDetails: orderDetails.map(detail => ({
           productId: detail.productId,
           quantity: detail.quantity,
@@ -231,6 +241,8 @@ const App = () => {
       checkoutData.forEach((product) => {
         dispatch(removeFromCart(product.productId));
       });
+      // Xóa sản phẩm mua ngay khỏi sessionStorage nếu có
+      sessionStorage.removeItem("checkoutNowProduct");
       
       navigate("/");
     } catch (error) {
@@ -244,6 +256,8 @@ const App = () => {
   // Hàm xử lý khi đóng modal
   const handleCloseModal = () => {
     setShowSuccessModal(false);
+    // Xóa sản phẩm mua ngay khỏi sessionStorage nếu có
+    sessionStorage.removeItem("checkoutNowProduct");
     navigate("/");
   };
 
@@ -286,23 +300,106 @@ const App = () => {
         </div>
         <div className="col-md-4">
           <div className="payment-method border border-light p-3 mb-3">
-            <h5 className="title font-weight-bold mb-2 mb-3">
+            <h5 className="title font-weight-bold mb-3">
               Chọn phương thức thanh toán
             </h5>
-            <div>
-              <input checked name="payment" type="radio" className="mb-3" />
-              Thanh toán khi nhận hàng
-            </div>
-            <div>
-              <input name="payment" type="radio" className="mb-3" />
-              Thẻ tín dụng/ ghi nợ
-            </div>
-            <div>
-              <input
-                className="form-control"
-                placeholder="Card Number"
-                type="text"
-              />
+            <div className="payment-options">
+              <div className="payment-option mb-3">
+                <input
+                  type="radio"
+                  id="cod"
+                  name="payment"
+                  checked={paymentMethod === "COD"}
+                  onChange={() => {
+                    setPaymentMethod("COD");
+                    setShowQRCode(false);
+                  }}
+                  className="me-2"
+                />
+                <label htmlFor="cod" className="d-flex align-items-center">
+                  <i className="fas fa-money-bill-wave me-2"></i>
+                  Thanh toán khi nhận hàng (COD)
+                </label>
+              </div>
+
+              <div className="payment-option mb-3">
+                <input
+                  type="radio"
+                  id="card"
+                  name="payment"
+                  checked={paymentMethod === "CARD"}
+                  onChange={() => {
+                    setPaymentMethod("CARD");
+                    setShowQRCode(false);
+                  }}
+                  className="me-2"
+                />
+                <label htmlFor="card" className="d-flex align-items-center">
+                  <i className="fas fa-credit-card me-2"></i>
+                  Thẻ tín dụng/ghi nợ
+                </label>
+                {paymentMethod === "CARD" && (
+                  <div className="card-details mt-2 ms-4">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Số thẻ"
+                      value={cardNumber}
+                      onChange={(e) => setCardNumber(e.target.value)}
+                      maxLength="16"
+                    />
+                    <div className="row mt-2">
+                      <div className="col">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="MM/YY"
+                          maxLength="5"
+                        />
+                      </div>
+                      <div className="col">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="CVV"
+                          maxLength="3"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="payment-option">
+                <input
+                  type="radio"
+                  id="qr"
+                  name="payment"
+                  checked={paymentMethod === "QR"}
+                  onChange={() => {
+                    setPaymentMethod("QR");
+                    setShowQRCode(true);
+                  }}
+                  className="me-2"
+                />
+                <label htmlFor="qr" className="d-flex align-items-center">
+                  <i className="fas fa-qrcode me-2"></i>
+                  Thanh toán qua mã QR
+                </label>
+                {showQRCode && (
+                  <div className="qr-code-container mt-3 ms-4 text-center">
+                    <div className="qr-code-placeholder p-3 border rounded">
+                      <img
+                        src="https://api.vietqr.io/image/VCB-1234567890-1234567890-compact2.png"
+                        alt="QR Code"
+                        style={{ maxWidth: "200px" }}
+                      />
+                      <p className="mt-2 mb-0">Quét mã QR để thanh toán</p>
+                      <p className="text-muted small">Mã QR sẽ được tạo sau khi xác nhận đơn hàng</p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="order-summary border border-light p-3 mb-3">
@@ -373,7 +470,7 @@ const App = () => {
                   <p><strong>Địa chỉ giao hàng:</strong> {selectedAddress?.address}</p>
                   <p><strong>Người nhận:</strong> {selectedAddress?.customerName}</p>
                   <p><strong>Số điện thoại:</strong> {selectedAddress?.phoneNumber}</p>
-                  <p><strong>Phương thức thanh toán:</strong> {paymentMethod === 'COD' ? 'Thanh toán khi nhận hàng' : 'Thẻ tín dụng/ghi nợ'}</p>
+                  <p><strong>Phương thức thanh toán:</strong> {paymentMethod === 'COD' ? 'Thanh toán khi nhận hàng' : paymentMethod === 'CARD' ? 'Thẻ tín dụng/ghi nợ' : 'Thanh toán qua mã QR'}</p>
                   <div className="border-top pt-3 mt-3">
                     <p className="mb-1"><strong>Tổng giá trị đơn hàng:</strong></p>
                     <h5 className="text-danger">

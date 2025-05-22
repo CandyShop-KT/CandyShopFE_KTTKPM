@@ -5,7 +5,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import "../assets/css/header.css";
 import { clearCart } from "../redux/slices/cartSlice";
 import { useDispatch } from "react-redux";
-
+import api from "../config/api";
 import CartIcon from "../components/CartIcon";
 // import { clearCart } from "../redux/slices/cartSlice";
 const Header = () => {
@@ -32,7 +32,7 @@ const Header = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:8081/api/categories");
+        const response = await fetch(`${api}/categories`);
         const data = await response.json();
         if (response.ok) {
           console.log("Categories fetched:", data.data);
@@ -57,9 +57,12 @@ const Header = () => {
   }, []);
 
   const handleCategoryHover = async (categoryId) => {
+    // Nếu đã có subcategories cho category này thì không gọi lại API nữa
+    if (subCategories[categoryId]) return;
+  
     try {
       const response = await fetch(
-        `http://localhost:8081/api/categories/${categoryId}/subcategories`
+        `${api}/categories/${categoryId}/subcategories`
       );
       const data = await response.json();
       if (response.ok) {

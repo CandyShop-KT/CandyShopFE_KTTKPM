@@ -155,3 +155,81 @@
 .popup-footer .btn-primary:hover {
   background-color: #0056b3;
 }
+
+/* Payment Method Styles */
+.payment-options {
+  padding: 10px 0;
+}
+
+.payment-option {
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.payment-option:hover {
+  background-color: #f8f9fa;
+}
+
+.payment-option label {
+  cursor: pointer;
+  font-size: 1rem;
+  color: #333;
+}
+
+.payment-option input[type="radio"] {
+  cursor: pointer;
+}
+
+.card-details {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.card-details input {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+
+.card-details input:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.qr-code-container {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.qr-code-placeholder {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.qr-code-placeholder img {
+  max-width: 200px;
+  height: auto;
+}
+
+.qr-code-placeholder p {
+  margin: 10px 0;
+  color: #666;
+}
+
+.qr-code-placeholder .text-muted {
+  font-size: 0.85rem;
+}
+
+/* Success Modal Payment Method Display */
+.modal-body .payment-method-info {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 10px 0;
+}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import api from "../config/api";
 
 const ManageUserDetail = () => {
   const location = useLocation();
@@ -29,7 +30,7 @@ const ManageUserDetail = () => {
     const fetchUserData = async () => {
       try {
         const userResponse = await axios.get(
-          `http://localhost:8081/api/users/${userId}`,
+          `${api}/users/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -46,7 +47,7 @@ const ManageUserDetail = () => {
         });
 
         const ordersResponse = await axios.get(
-          `http://localhost:8081/api/users/${userId}/orders?page=0&limit=10&sortField=createdAt&sortOrder=desc`,
+          `${api}/users/${userId}/orders?page=0&limit=10&sortField=createdAt&sortOrder=desc`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -79,7 +80,7 @@ const ManageUserDetail = () => {
   const handleUpdateUser = async () => {
     console.log(formData);
     try {
-      await axios.patch(`http://localhost:8081/api/users/${userId}`, formData, {
+      await axios.patch(`${api}/users/${userId}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

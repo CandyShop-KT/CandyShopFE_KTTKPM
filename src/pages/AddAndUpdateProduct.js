@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../assets/css/AddAndUpdateProduct.css";
 import AdminLayout from "../layouts/AdminLayout";
+import api from "../config/api";
 
 const AddAndUpdateProduct = () => {
   const { productId } = useParams();

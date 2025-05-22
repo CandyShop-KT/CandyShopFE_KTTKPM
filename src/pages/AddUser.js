@@ -25,7 +25,7 @@ import axios from 'axios';
 import AdminLayout from '../layouts/AdminLayout';
 import moment from 'moment'; // Thêm moment để xử lý ngày tháng
 import '../assets/css/manageUser.css';
-
+import api from '../config/api';
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -38,7 +38,7 @@ const AddUser = () => {
   const [userData, setUserData] = useState(null);
 
   const token = localStorage.getItem('token');
-  const api = 'http://localhost:8081/api/';
+ 
 
   useEffect(() => {
     if (userId) {
