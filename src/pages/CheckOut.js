@@ -22,11 +22,17 @@ const App = () => {
   const [orderSuccess, setOrderSuccess] = useState(null);
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
-  const { checkoutData } = useSelector((state) => state.checkout);
-  const [selectedAddress, setSelectedAddress] = useState(null);
   const dispatch = useDispatch();
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const [cardNumber, setCardNumber] = useState("");
   const [showQRCode, setShowQRCode] = useState(false);
+
+  // Gọi useSelector ở trên, sau đó xử lý logic chọn checkoutData
+  const reduxCheckoutData = useSelector((state) => state.checkout.checkoutData);
+  const checkoutNowProduct = sessionStorage.getItem("checkoutNowProduct");
+  const checkoutData = checkoutNowProduct
+    ? [JSON.parse(checkoutNowProduct)]
+    : reduxCheckoutData;
 
   useEffect(() => {
     if (!token) {
@@ -235,6 +241,8 @@ const App = () => {
       checkoutData.forEach((product) => {
         dispatch(removeFromCart(product.productId));
       });
+      // Xóa sản phẩm mua ngay khỏi sessionStorage nếu có
+      sessionStorage.removeItem("checkoutNowProduct");
       
       navigate("/");
     } catch (error) {
@@ -248,6 +256,8 @@ const App = () => {
   // Hàm xử lý khi đóng modal
   const handleCloseModal = () => {
     setShowSuccessModal(false);
+    // Xóa sản phẩm mua ngay khỏi sessionStorage nếu có
+    sessionStorage.removeItem("checkoutNowProduct");
     navigate("/");
   };
 

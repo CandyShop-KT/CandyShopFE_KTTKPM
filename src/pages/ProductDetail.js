@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../assets/css/ProductDetail.css";
 import api from "../config/api";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../redux/slices/cartSlice";
+
 const ProductDetail = () => {
   const { productId } = useParams(); // Lấy productId từ URL
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [notification, setNotification] = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProductDetail = async () => {
@@ -28,13 +34,20 @@ const ProductDetail = () => {
   }, [productId]); // Chạy lại khi productId thay đổi
 
   const handleAddToCart = () => {
-    // Logic để thêm sản phẩm vào giỏ hàng
-    console.log("Thêm vào giỏ hàng:", product);
+    if (!product) return;
+    dispatch(addToCart(product));
+    setNotification("Đã thêm sản phẩm vào giỏ hàng!");
+    setTimeout(() => setNotification(null), 800);
   };
 
   const handleBuyNow = () => {
-    // Logic để mua ngay sản phẩm
-    console.log("Mua ngay sản phẩm:", product);
+    if (!product) return;
+    // Lưu sản phẩm vào sessionStorage để checkout chỉ đúng sản phẩm này
+    sessionStorage.setItem(
+      "checkoutNowProduct",
+      JSON.stringify({ ...product, quantity: 1 })
+    );
+    navigate("/checkout");
   };
 
   if (loading) {
@@ -72,6 +85,12 @@ const ProductDetail = () => {
               Mua ngay
             </button>
           </div>
+        </div>
+      )}
+      {/* Notification Popup */}
+      {notification && (
+        <div className="notification-container p-3">
+          <div className="notification-message">{notification}</div>
         </div>
       )}
     </div>
