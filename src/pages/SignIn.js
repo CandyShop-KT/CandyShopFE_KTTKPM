@@ -70,8 +70,12 @@ const SignIn = () => {
         if (role === "ADMIN") {
           toast.success("Đăng nhập thành công với quyền admin!", {
             onClose: () => {
-              navigate("/admin");
-              window.location.reload();
+              if (status === "INACTIVE") {
+                navigate("/verify-otp");
+              } else {
+                navigate("/admin");
+                window.location.reload();
+              }
             },
           });
         } else {
