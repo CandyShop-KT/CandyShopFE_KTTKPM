@@ -120,9 +120,9 @@ const ProductManagement = () => {
       switch (type) {
         case "product":
           response = await axios.get(
-            `http://localhost:8081/api/products/search?keyword=${value}&page=${
+            `http://localhost:8081/api/products/searchByName?name=${value}&page=${
               pagination.current - 1
-            }&size=${pagination.pageSize}`,
+            }&limit=${pagination.pageSize}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -381,7 +381,7 @@ const ProductManagement = () => {
       fetchCategories();
       fetchSubCategories();
     } catch (error) {
-      message.error("Lỗi khi xóa vì đã tồn tại sản phẩm dùng danh mục con");
+      message.error("Lỗi khi xóa vì đã tồn tại khóa ngoại có liên quan");
     }
   };
 

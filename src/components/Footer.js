@@ -95,7 +95,7 @@ const Footer = () => {
 
           {/* Right Section */}
           <div style={columnStyle}>
-            <h5 style={titleStyle}>NHÓM</h5>
+            <h5 style={titleStyle}>NHÓM 3 người:</h5>
             <p>Các thành viên trong nhóm:</p>
             <p>Nguyên Ngọc Tường Vân</p>
             <p>Nguyễn Thị Thu Hồng</p>

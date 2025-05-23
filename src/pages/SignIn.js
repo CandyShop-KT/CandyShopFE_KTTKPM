@@ -53,11 +53,16 @@ const SignIn = () => {
         const role = data.role; // Lấy vai trò
         const userId = data.userId;
         const userName = data.userName;
+        const email = data.email; // Lấy email
+        const status = data.status; // Lấy trạng thái người dùng
+
         // Lưu token và vai trò vào localStorage
         localStorage.setItem("token", token);
         localStorage.setItem("role", role);
         localStorage.setItem("userId", userId);
         localStorage.setItem("userName", userName);
+        localStorage.setItem("email", email); // Lưu email
+        localStorage.setItem("status", status); // Lưu trạng thái
 
         // Đồng bộ giỏ hàng sau khi đăng nhập
         dispatch(syncCart());
@@ -72,8 +77,13 @@ const SignIn = () => {
         } else {
           toast.success("Đăng nhập thành công!", {
             onClose: () => {
-              navigate("/");
-              window.location.reload();
+              // Chỉ chuyển đến trang OTP nếu trạng thái là INACTIVE
+              if (status === "INACTIVE") {
+                navigate("/verify-otp");
+              } else {
+                navigate("/");
+                window.location.reload();
+              }
             },
           });
         }
