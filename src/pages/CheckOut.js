@@ -8,7 +8,7 @@ import {
   removeFromCart,
   toggleSelectProduct,
 } from "../redux/slices/cartSlice";
-
+import api from "../config/api";
 const App = () => {
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState("COD");
@@ -96,7 +96,7 @@ const App = () => {
       // Bước 1: Lấy priceId cho từng sản phẩm
       const priceHistoryPromises = checkoutData.map((product) =>
         fetch(
-          `http://localhost:8081/api/products/${product.productId}/price-histories`
+          `${api}/products/${product.productId}/price-histories`
         )
           .then((response) => response.json())
           .then((data) => {
@@ -209,7 +209,7 @@ const App = () => {
       console.log("Dữ liệu đơn hàng sẽ gửi:", JSON.stringify(orderRequestDTO, null, 2));
 
       // Bước 5: Gửi yêu cầu tạo đơn hàng
-      const orderResponse = await fetch("http://localhost:8081/api/orders", {
+      const orderResponse = await fetch(`${api}/orders`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

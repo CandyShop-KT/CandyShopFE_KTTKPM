@@ -53,7 +53,7 @@ const AddAndUpdateProduct = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://localhost:8081/api/categories");
+      const response = await axios.get(`${api}/categories`);
       setCategories(response.data.data);
       setIsFetch(true);
     } catch (error) {
@@ -63,7 +63,7 @@ const AddAndUpdateProduct = () => {
 
   const fetchPublishers = async () => {
     try {
-      const response = await axios.get("http://localhost:8081/api/publishers", {
+      const response = await axios.get(`${api}/publishers`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -76,7 +76,7 @@ const AddAndUpdateProduct = () => {
 
   const fetchProductDetails = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:8081/api/products/${id}`);
+      const response = await axios.get(`${api}/products/${id}`);
       const product = response.data.data;
       setProductName(product.productName);
       setDescription(product.description);
@@ -84,7 +84,7 @@ const AddAndUpdateProduct = () => {
       setWeight(product.weight);
 
       const subCategoryResponse = await axios.get(
-        `http://localhost:8081/api/subcategories/${product.subCategory.subCategoryId}`
+        `${api}/subcategories/${product.subCategory.subCategoryId}`
       );
       const subCategoryData = subCategoryResponse.data.data;
       setCategoryId(subCategoryData.category.categoryId);
@@ -105,7 +105,7 @@ const AddAndUpdateProduct = () => {
   const fetchSubCategories = async (categoryId) => {
     try {
       const response = await axios.get(
-        `http://localhost:8081/api/categories/${categoryId}/subcategories`
+        `${api}/categories/${categoryId}/subcategories`
       );
       setSubCategories(response.data.data);
     } catch (error) {
@@ -130,7 +130,7 @@ const AddAndUpdateProduct = () => {
 
       try {
         const response = await axios.post(
-          `http://localhost:8081/api/products/${productId}/price-histories`,
+          `${api}/products/${productId}/price-histories`,
           {
             newPrice: parseFloat(newPrice),
             priceChangeReason,
@@ -174,7 +174,7 @@ const AddAndUpdateProduct = () => {
         if (!priceUpdated) return;
 
         const response = await axios.patch(
-          `http://localhost:8081/api/products/${productId}`,
+          `${api}/products/${productId}`,
           formData,
           {
             headers: {
@@ -188,7 +188,7 @@ const AddAndUpdateProduct = () => {
           const imageFormData = new FormData();
           imageFormData.append("file", mainImage);
           await axios.patch(
-            `http://localhost:8081/api/products/${productId}/main-image`,
+            `${api}/products/${productId}/main-image`,
             imageFormData,
             {
               headers: {
@@ -209,7 +209,7 @@ const AddAndUpdateProduct = () => {
         }
 
         const response = await axios.post(
-          "http://localhost:8081/api/products",
+          `${api}/products`,
           formData,
           {
             headers: {
@@ -245,7 +245,7 @@ const AddAndUpdateProduct = () => {
     if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
       try {
         const response = await axios.delete(
-          `http://localhost:8081/api/products/${productId}`,
+          `${api}/products/${productId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
