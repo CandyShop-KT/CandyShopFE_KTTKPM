@@ -29,7 +29,8 @@ const Product = ({ setCartCount }) => {
   const [sortField, setSortField] = useState("productName");
   const [sortOrder, setSortOrder] = useState("asc");
 
-
+const status = localStorage.getItem("status");
+console.log("Trạng thái sau khi đăng nhập",status);
 
 
   const images = [
@@ -286,6 +287,7 @@ useEffect(() => {
     defaultValue={priceRange}
     onChange={(value) => setPriceRange(value)}
     allowCross={false}
+ 
   />
   <div className="d-flex justify-content-between small text-muted mt-1">
     <span>{priceRange[0].toLocaleString()} VND</span>
@@ -300,7 +302,7 @@ useEffect(() => {
     fetchProductsByPriceRange(0);
   }}
          className="btn btn-apply mt-3"
-        style={{ whiteSpace: "nowrap" }}
+        style={{ whiteSpace: "nowrap" , backgroundColor: "#432818"}}
       >
         Áp dụng
       </button>

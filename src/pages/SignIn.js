@@ -29,7 +29,7 @@ const SignIn = () => {
       if (user.role === "ADMIN") {
         navigate("/admin");
       } else {
-        navigate("/");
+         navigate("/");
       }
     }
   }, [navigate]);
@@ -44,6 +44,7 @@ const SignIn = () => {
           password,
         }
       );
+      console.log("Response sau khi đăng nhập",response);
 
       // Kiểm tra nếu đăng nhập thành công
       if (response.status === 200) {
@@ -53,11 +54,18 @@ const SignIn = () => {
         const role = data.role; // Lấy vai trò
         const userId = data.userId;
         const userName = data.userName;
+        const email = data.email; // Lấy email
+        const status = data.status; // Lấy trạng thái người dùng
+
         // Lưu token và vai trò vào localStorage
         localStorage.setItem("token", token);
         localStorage.setItem("role", role);
         localStorage.setItem("userId", userId);
         localStorage.setItem("userName", userName);
+        localStorage.setItem("email", email); // Lưu email
+        localStorage.setItem("status", status); // Lưu trạng thái
+        console.log("Trạng thái sau khi đăng nhập",status);
+        console.log("Vai trò sau khi đăng nhập",role);
 
         // Đồng bộ giỏ hàng sau khi đăng nhập
         dispatch(syncCart());
@@ -65,15 +73,24 @@ const SignIn = () => {
         if (role === "ADMIN") {
           toast.success("Đăng nhập thành công với quyền admin!", {
             onClose: () => {
-              navigate("/admin");
-              window.location.reload();
+              if (status === "INACTIVE") {
+                navigate("/verify-otp");
+              } else {
+                navigate("/admin");
+                window.location.reload();
+              }
             },
           });
         } else {
           toast.success("Đăng nhập thành công!", {
             onClose: () => {
-              navigate("/");
-              window.location.reload();
+              // Chỉ chuyển đến trang OTP nếu trạng thái là INACTIVE
+              if (status === "INACTIVE") {
+                navigate("/verify-otp");
+              } else {
+                navigate("/");
+                window.location.reload();
+              }
             },
           });
         }

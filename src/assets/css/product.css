@@ -40,6 +40,13 @@
   width: 36px;
   height: 36px;
 }
+/* Đổi màu thanh track của rc-slider thành màu nâu */
+.rc-slider-track {
+  background-color: #432818 !important; /* Màu nâu đậm, bạn có thể đổi mã màu */
+}
+.rc-slider-handle {
+  border-color: #432818 !important;
+}
 
 span {
   color: #fff;

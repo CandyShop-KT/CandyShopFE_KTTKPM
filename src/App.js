@@ -38,7 +38,7 @@ import UserDetail from "./pages/UserDetail";
 import UserAddress from "./pages/UserAddress";
 import AddUser from "./pages/AddUser";
 import ProductManagement from "./pages/Admin/ProductManagement";
-
+import OTPVerification from "./pages/OTPVerification";
 const AppLayout = ({ children }) => {
   const location = useLocation();
   const isAdminRoute =
@@ -65,6 +65,7 @@ function App() {
           <Route path="/addaddress" element={<AddAddress />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/verify-otp" element={<OTPVerification />} />
           <Route path="/product/:subCategoryId" element={<Product />} />
           <Route path="/product" element={<Product />} />
 
